@@ -5,7 +5,8 @@ var g_height = 40;
 var g_interval;
 var g_running = 0;
 
-var g_lambda = 0.01;
+var g_lambda = 0.05;
+var g_memoryLimit = 200;
 
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
@@ -94,8 +95,8 @@ function communicate(agentCoords, neighborCoords, newMatrix) {
 	var yNeighbor = neighborCoords[1];
 	
 	//store in memory
-	var agentMemory = utteranceNeighbor + g_myMatrix[xAgent][yAgent][1];
-	var neighborMemory = utteranceAgent + g_myMatrix[xNeighbor][yNeighbor][1];
+	var agentMemory = truncateMemory(utteranceNeighbor + g_myMatrix[xAgent][yAgent][1]);
+	var neighborMemory = truncateMemory(utteranceAgent + g_myMatrix[xNeighbor][yNeighbor][1]);
 	
 	// adapt grammar
 	var agentGrammar = g_myMatrix[xAgent][yAgent][0];
@@ -124,10 +125,15 @@ function produceUtterance(agentCoords) {
 function countARatio(memory) {
 	var counter = 0;
 	for (var i = 0; i < memory.length; i++) {
-		if (memory.charAt(i) == "α") counter++;
+		if (memory.charAt(i) === "α") counter++;
+	}
 	return counter/memory.length;
-}
 	
+}
+
+function truncateMemory(memory) {
+	if (memory.length > g_memoryLimit) memory = memory.substring(0, g_memoryLimit); 
+	return memory;
 }
 
 function drawToCanvas() {
