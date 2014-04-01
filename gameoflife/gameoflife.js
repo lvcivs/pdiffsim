@@ -60,7 +60,7 @@ function stepSim() {
 			else newMatrix[x][y] = 0;
 		}
 	}
-	g_myMatrix = newMatrix.slice(0);
+	//g_myMatrix = newMatrix.slice(0);
 	g_myMatrix = newMatrix;
 	drawToCanvas();
 }
