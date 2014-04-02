@@ -4,9 +4,10 @@ var g_height = 40;
 
 var g_interval;
 var g_running = 0;
+var g_tick = 0;
 
-var g_lambda = 0.05;
-var g_memoryLimit = 200;
+var g_lambda = 0.5;
+var g_memoryLimit = 40; //200
 
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
@@ -31,9 +32,7 @@ function initSim() {
 	
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
-			//~ console.log("pInit:" + pInit);
-			g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/4, ""];
-			//~ console.log("g_myMatrix[x][y][0]:" + g_myMatrix[x][y][0]);
+			g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
 		}
 	}
 
@@ -52,6 +51,8 @@ function runSim() { // run or stop
 
 function stepSim() {
 	var neighbor = 0;
+	g_tick++;
+	document.getElementById('ticks').innerHTML = g_tick;
 
 	// zwischenspeichern
 	newMatrix = matrix(g_height, g_width, [0, ""]);
@@ -61,6 +62,7 @@ function stepSim() {
 			var agentCoords = [x, y];
 			var neighborCoords = selectNeighbor(x, y);
 			communicate(agentCoords, neighborCoords, newMatrix); 
+			//~ console.log("agent " + agentCoords + " is now talking to " + neighborCoords);
 		}
 	}
 	g_myMatrix = newMatrix;
@@ -142,10 +144,14 @@ function drawToCanvas() {
 
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
-			var color = "yellow";
+			//~ var color = "yellow";
 			//~ console.log("g_myMatrix[x][y][0]:" + g_myMatrix[x][y][0]);
-			if (g_myMatrix[x][y][0] <= 0.45) color = "green";
-			if (g_myMatrix[x][y][0] >= 0.55) color = "red";
+			var p = g_myMatrix[x][y][0];
+			var green = Math.floor(255*p);
+			var red = Math.floor(255*(1-p));
+			//~ if (g_myMatrix[x][y][0] <= 0.45) color = "green";
+			//~ if (g_myMatrix[x][y][0] >= 0.55) color = "red";
+			var color = "rgb(" + red + "," + green + ", 0)";
 			myContext.fillStyle = color;
 			myContext.fillRect(x*4, y*4, 4, 4);
 		}

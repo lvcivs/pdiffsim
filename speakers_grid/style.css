@@ -23,3 +23,8 @@ body a {
 #buttons {
 	margin-bottom:2em;
 	}
+
+#data {
+	color:grey;
+	font-size:smaller;
+}
