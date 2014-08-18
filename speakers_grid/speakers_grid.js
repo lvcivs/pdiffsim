@@ -6,9 +6,11 @@ var g_interval;
 var g_running = 0;
 var g_tick = 0;
 
-var g_lambda = 0.5;
-var g_memoryLimit = 40; //200
+var g_initScenario = "random";
 
+var g_lambda = 0.5; // how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
+var g_memoryLimit = 20; //10: very fast change, 100: very slow change
+var g_alpha_bias = 1.2; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
 	var arr = [];
@@ -37,6 +39,13 @@ function setGridSize(i) {
 }
 
 
+function chooseInitScenario(s) {
+	
+	//~ console.log("s=" + s);
+	g_initScenario = s;
+	
+}
+
 
 function initSim() {
 	var myCanvas = document.getElementById("simCanvas");
@@ -46,36 +55,42 @@ function initSim() {
 
 	g_myMatrix = matrix(g_height, g_width, 0);// initial probability, initial memory
 	
-	//~ // purely random
-	for (var x = 0; x < g_width; x++) {
-		for (var y = 0; y < g_height; y++) {
-			g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
+	// purely random
+	if (g_initScenario === "random") {
+		for (var x = 0; x < g_width; x++) {
+			for (var y = 0; y < g_height; y++) {
+				g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
+			}
 		}
 	}
-	
-	//island
-	//~ for (var x = 0; x < g_width; x++) {
-		//~ for (var y = 0; y < g_height; y++) {
-			//~ g_myMatrix[x][y] = [0, ""]; // probability of saying α
-			//~ var blockwidth = 4;
-			//~ if (x > (g_width / 2) - (blockwidth / 2) && x < (g_width / 2) + (blockwidth / 2) && y > (g_height / 2) - (blockwidth / 2) && y < (g_height / 2) + (blockwidth / 2) ) {
-				//~ g_myMatrix[x][y] = [1, ""];
-			//~ }
-			//~ 
-		//~ }
-	//~ }
 
-	//~ //opposition
-	//~ for (var x = 0; x < g_width; x++) {
-		//~ for (var y = 0; y < g_height; y++) {
-			//~ g_myMatrix[x][y] = [0, ""]; // probability of saying α
-			//~ var blockwidth = 4;
-			//~ if (x > (g_width / 2) ) {
-				//~ g_myMatrix[x][y] = [1, ""];
-			//~ }
-			//~ 
-		//~ }
-	//~ }
+	//island
+	if (g_initScenario === "island") {
+		for (var x = 0; x < g_width; x++) {
+			for (var y = 0; y < g_height; y++) {
+				g_myMatrix[x][y] = [0, ""]; // probability of saying α
+				var blockwidth = 4;
+				if (x > (g_width / 2) - (blockwidth / 2) && x < (g_width / 2) + (blockwidth / 2) && y > (g_height / 2) - (blockwidth / 2) && y < (g_height / 2) + (blockwidth / 2) ) {
+					g_myMatrix[x][y] = [1, ""];
+				}
+				
+			}
+		}
+	}
+
+	//two fields
+	if (g_initScenario === "two fields") {
+		for (var x = 0; x < g_width; x++) {
+			for (var y = 0; y < g_height; y++) {
+				g_myMatrix[x][y] = [0, ""]; // probability of saying α, agent's memory (as a string)
+				var blockwidth = 4;
+				if (x > (g_width / 2) ) {
+					g_myMatrix[x][y] = [1, ""];
+				}
+				
+			}
+		}
+	}
 
 
 	drawToCanvas();
@@ -98,7 +113,7 @@ function stepSim() {
 	// zwischenspeichern
 	newMatrix = matrix(g_height, g_width, [0, ""]);
 
-	for (var x = 0; x < g_width; x++) {
+	for (var x = 0; x < g_width; x++) { // var x = g_width-1; x >= 0; x-- 
 		for (var y = 0; y < g_height; y++) {
 			var agentCoords = [x, y];
 			var neighborCoords = selectNeighbor(x, y);
@@ -114,8 +129,10 @@ function stepSim() {
 function selectNeighbor(x, y) {
 	var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
 	
-	var i = Math.floor((Math.random()*1000)%8);
-	while (! borderCheck(neighbors[i])) i = Math.floor((Math.random()*1000)%8);
+	var i = 0;
+	do { i = Math.floor((Math.random()*1000)%8);
+	} 
+	while (! borderCheck(neighbors[i]));
 	return neighbors[i];
 }
 
@@ -162,7 +179,7 @@ function communicate(agentCoords, neighborCoords, newMatrix) {
 	var neighborGrammarNew = neighborGrammar + g_lambda*(countARatio(neighborMemory) - neighborGrammar);
 
 	newMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory];
-	newMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory];
+	//newMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory];
 }
 
 function produceUtterance(agentCoords) {
@@ -171,8 +188,8 @@ function produceUtterance(agentCoords) {
 	var u = "";
 	for (var i = 0; i < 10; i++) {
 		var myRand = Math.random();
-		var p = g_myMatrix[x][y][0];
-		if (myRand <= p) u += "α"; 
+		var agentGrammar = g_myMatrix[x][y][0];
+		if (myRand <= agentGrammar * g_alpha_bias) u += "α"; 
 		else u += "β"; 
 	}
 	return u;

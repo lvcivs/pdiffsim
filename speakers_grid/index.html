@@ -9,10 +9,17 @@
 <div id="content">
 	<h2>Speakers (grid)</h2>
 		<div id="controls">
+			<form>
 			<input id='init' type="button" onclick="initSim()" value="init"></input>
-			<input id='runstop' type="button" onclick="runSim()" value="run/stop"></input>
-			<input id='step' type="button" onclick="stepSim()" value="step"></input><br>
-			grid size: <input name="gridSize" type="radio" onclick="setGridSize(20)" value="20" checked> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80
+			<input id='step' type="button" onclick="stepSim()" value="step"></input>
+			<input id='runstop' type="button" onclick="runSim()" value="run/stop"></input><br>
+			grid size: <input name="gridSize" type="radio" onclick="setGridSize(20)" value="20" checked> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80<br>
+			init scenario: <select name="initScenario"  onchange="chooseInitScenario(this.form.initScenario.options[this.form.initScenario.selectedIndex].value)" size="1">
+      <option value="random" selected>random</option>
+      <option value="two fields">two fields</option>
+      <option value="island">island</option>
+    </select>
+    </form>
 		</div>
 
 		<div>
