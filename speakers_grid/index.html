@@ -8,10 +8,11 @@
 	<body>
 <div id="content">
 	<h2>Speakers (grid)</h2>
-		<div id="buttons">
+		<div id="controls">
 			<input id='init' type="button" onclick="initSim()" value="init"></input>
 			<input id='runstop' type="button" onclick="runSim()" value="run/stop"></input>
-			<input id='step' type="button" onclick="stepSim()" value="step"></input>
+			<input id='step' type="button" onclick="stepSim()" value="step"></input><br>
+			grid size: <input name="gridSize" type="radio" onclick="setGridSize(20)" value="20" checked> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80
 		</div>
 
 		<div>

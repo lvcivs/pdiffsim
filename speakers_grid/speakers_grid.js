@@ -30,18 +30,44 @@ function initSim() {
 
 	g_myMatrix = matrix(g_height, g_width, 0);// initial probability, initial memory
 	
+	// purely random
+	//~ for (var x = 0; x < g_width; x++) {
+		//~ for (var y = 0; y < g_height; y++) {
+			//~ g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
+		//~ }
+	//~ }
+	
+	//island
+	//~ for (var x = 0; x < g_width; x++) {
+		//~ for (var y = 0; y < g_height; y++) {
+			//~ g_myMatrix[x][y] = [0, ""]; // probability of saying α
+			//~ var blockwidth = 4;
+			//~ if (x > (g_width / 2) - (blockwidth / 2) && x < (g_width / 2) + (blockwidth / 2) && y > (g_height / 2) - (blockwidth / 2) && y < (g_height / 2) + (blockwidth / 2) ) {
+				//~ g_myMatrix[x][y] = [1, ""];
+			//~ }
+			//~ 
+		//~ }
+	//~ }
+
+	//opposition
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
-			g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
+			g_myMatrix[x][y] = [0, ""]; // probability of saying α
+			var blockwidth = 4;
+			if (x > (g_width / 2) ) {
+				g_myMatrix[x][y] = [1, ""];
+			}
+			
 		}
 	}
+
 
 	drawToCanvas();
 }
 
 function runSim() { // run or stop
 	if (!g_running) {
-		 g_interval = setInterval(stepSim,500);
+		 g_interval = setInterval(stepSim,50);
 		 g_running = 1;
 	} else {
 		clearInterval(g_interval);
@@ -156,4 +182,16 @@ function drawToCanvas() {
 			myContext.fillRect(x*4, y*4, 4, 4);
 		}
 	}
+}
+
+function setGridSize(i) {
+	g_width = i;
+	g_height = i;
+	g_myMatrix = 0;
+	
+	//~ console.log("i=" + i);
+	
+	document.getElementById("simCanvas").width = i * 4;
+	document.getElementById("simCanvas").height = i * 4;
+
 }
