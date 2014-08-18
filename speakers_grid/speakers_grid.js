@@ -24,18 +24,34 @@ function matrix(rows, cols, defaultValue) {
 }
 
 
+function setGridSize(i) {
+	g_width = i;
+	g_height = i;
+	g_myMatrix = 0;
+	
+	//~ console.log("i=" + i);
+	
+	document.getElementById("simCanvas").width = i * 4;
+	document.getElementById("simCanvas").height = i * 4;
+
+}
+
+
+
 function initSim() {
 	var myCanvas = document.getElementById("simCanvas");
 	var myContext = myCanvas.getContext("2d");
+	
+	g_tick = 0;
 
 	g_myMatrix = matrix(g_height, g_width, 0);// initial probability, initial memory
 	
-	// purely random
-	//~ for (var x = 0; x < g_width; x++) {
-		//~ for (var y = 0; y < g_height; y++) {
-			//~ g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
-		//~ }
-	//~ }
+	//~ // purely random
+	for (var x = 0; x < g_width; x++) {
+		for (var y = 0; y < g_height; y++) {
+			g_myMatrix[x][y] = [0.5 + (Math.random() - 0.5)/2, ""]; // probability of saying α
+		}
+	}
 	
 	//island
 	//~ for (var x = 0; x < g_width; x++) {
@@ -49,17 +65,17 @@ function initSim() {
 		//~ }
 	//~ }
 
-	//opposition
-	for (var x = 0; x < g_width; x++) {
-		for (var y = 0; y < g_height; y++) {
-			g_myMatrix[x][y] = [0, ""]; // probability of saying α
-			var blockwidth = 4;
-			if (x > (g_width / 2) ) {
-				g_myMatrix[x][y] = [1, ""];
-			}
-			
-		}
-	}
+	//~ //opposition
+	//~ for (var x = 0; x < g_width; x++) {
+		//~ for (var y = 0; y < g_height; y++) {
+			//~ g_myMatrix[x][y] = [0, ""]; // probability of saying α
+			//~ var blockwidth = 4;
+			//~ if (x > (g_width / 2) ) {
+				//~ g_myMatrix[x][y] = [1, ""];
+			//~ }
+			//~ 
+		//~ }
+	//~ }
 
 
 	drawToCanvas();
@@ -78,7 +94,6 @@ function runSim() { // run or stop
 function stepSim() {
 	var neighbor = 0;
 	g_tick++;
-	document.getElementById('ticks').innerHTML = g_tick;
 
 	// zwischenspeichern
 	newMatrix = matrix(g_height, g_width, [0, ""]);
@@ -95,23 +110,36 @@ function stepSim() {
 	drawToCanvas();
 }
 
+
 function selectNeighbor(x, y) {
-	var i = Math.floor((Math.random()*1000)%8);
 	var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
 	
-	return borderCheck(neighbors[i]);
+	var i = Math.floor((Math.random()*1000)%8);
+	while (! borderCheck(neighbors[i])) i = Math.floor((Math.random()*1000)%8);
+	return neighbors[i];
 }
 
+// endless space (wrap neighbors over border)
+//~ function borderCheck(xy) {
+	//~ var x = xy[0];
+	//~ var y = xy[1];
+	//~ if (x < 0) x = g_width - 1;
+	//~ if (y < 0) y = g_height - 1;
+	//~ if (x == g_width) x = 0;
+	//~ if (y == g_height) y = 0;
+	//~ return [x, y];
+//~ }
+
+// finite space (borders are limits)
 function borderCheck(xy) {
 	var x = xy[0];
 	var y = xy[1];
-	if (x < 0) x = g_width - 1;
-	if (y < 0) y = g_height - 1;
-	if (x == g_width) x = 0;
-	if (y == g_height) y = 0;
-	return [x, y];
+	if (x < 0) return false;
+	if (y < 0) return false;
+	if (x == g_width) return false;
+	if (y == g_height) return false;
+	return true;
 }
-
 function communicate(agentCoords, neighborCoords, newMatrix) {
 	var utteranceAgent = produceUtterance(agentCoords);
 	var utteranceNeighbor = produceUtterance(neighborCoords);
@@ -182,16 +210,6 @@ function drawToCanvas() {
 			myContext.fillRect(x*4, y*4, 4, 4);
 		}
 	}
+	document.getElementById('ticks').innerHTML = g_tick;
 }
 
-function setGridSize(i) {
-	g_width = i;
-	g_height = i;
-	g_myMatrix = 0;
-	
-	//~ console.log("i=" + i);
-	
-	document.getElementById("simCanvas").width = i * 4;
-	document.getElementById("simCanvas").height = i * 4;
-
-}
