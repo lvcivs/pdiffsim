@@ -10,7 +10,8 @@ var g_initScenario = "random";
 
 var g_lambda = 0.5; // how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
 var g_memoryLimit = 20; //10: very fast change, 100: very slow change
-var g_alphaBias = 1.2; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+var g_alphaBias = 1; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
 	var arr = [];
@@ -37,8 +38,6 @@ function setGridSize(i) {
 	g_width = i;
 	g_height = i;
 	g_myMatrix = 0;
-	
-	//~ console.log("i=" + i);
 	
 	document.getElementById("simCanvas").width = i * 4;
 	document.getElementById("simCanvas").height = i * 4;
@@ -167,18 +166,15 @@ function stepSim() {
 	var neighbor = 0;
 	g_tick++;
 
-	// zwischenspeichern
-	newMatrix = matrix(g_height, g_width, [0, ""]);
-
-	for (var x = 0; x < g_width; x++) { // var x = g_width-1; x >= 0; x-- 
+	//~ for (var x = 0; x < g_width; x++) {
+	for (var x = g_width-1; x >= 0; x-- ) { 
 		for (var y = 0; y < g_height; y++) {
 			var agentCoords = [x, y];
 			var neighborCoords = selectNeighbor(x, y);
-			communicate(agentCoords, neighborCoords, newMatrix); 
+			communicate(agentCoords, neighborCoords); 
 			//~ console.log("agent " + agentCoords + " is now talking to " + neighborCoords);
 		}
 	}
-	g_myMatrix = newMatrix;
 	drawToCanvas();
 }
 
@@ -215,7 +211,7 @@ function borderCheck(xy) {
 	if (y == g_height) return false;
 	return true;
 }
-function communicate(agentCoords, neighborCoords, newMatrix) {
+function communicate(agentCoords, neighborCoords) {
 	var utteranceAgent = produceUtterance(agentCoords);
 	var utteranceNeighbor = produceUtterance(neighborCoords);
 	
@@ -236,8 +232,9 @@ function communicate(agentCoords, neighborCoords, newMatrix) {
 	var agentGrammarNew = agentGrammar + g_lambda*(countARatio(agentMemory) - agentGrammar);
 	var neighborGrammarNew = neighborGrammar + g_lambda*(countARatio(neighborMemory) - neighborGrammar);
 
-	newMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory];
-	//newMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory]; // only adjust grammar of agent for now (not neighbor)
+	g_myMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory];
+	g_myMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory];
+
 }
 
 function produceUtterance(agentCoords) {
