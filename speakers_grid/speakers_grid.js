@@ -29,7 +29,11 @@ function matrix(rows, cols, defaultValue) {
 function setGridSize(i) {
 	
 	stopSim();
-	
+	g_tick = 0;
+	document.getElementById('ticks').innerHTML = g_tick;
+	document.getElementById("stepButton").disabled = true;
+	document.getElementById("runStopButton").disabled = true;
+
 	g_width = i;
 	g_height = i;
 	g_myMatrix = 0;
@@ -156,6 +160,7 @@ function stopSim() {
 	g_running = 0;
 	document.getElementById("initButton").disabled = false;
 	document.getElementById("stepButton").disabled = false;
+
 }
 
 function stepSim() {
