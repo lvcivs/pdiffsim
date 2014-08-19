@@ -186,6 +186,7 @@ function stepSim() {
 function selectNeighbor(x, y) {
 	var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
 	
+	// retry if coords are out of bounds
 	var i = 0;
 	do { i = Math.floor((Math.random()*1000)%8);
 	} 
@@ -236,7 +237,7 @@ function communicate(agentCoords, neighborCoords, newMatrix) {
 	var neighborGrammarNew = neighborGrammar + g_lambda*(countARatio(neighborMemory) - neighborGrammar);
 
 	newMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory];
-	//newMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory];
+	//newMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory]; // only adjust grammar of agent for now (not neighbor)
 }
 
 function produceUtterance(agentCoords) {
@@ -272,13 +273,9 @@ function drawToCanvas() {
 
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
-			//~ var color = "yellow";
-			//~ console.log("g_myMatrix[x][y][0]:" + g_myMatrix[x][y][0]);
 			var p = g_myMatrix[x][y][0];
 			var green = Math.floor(255*p);
 			var red = Math.floor(255*(1-p));
-			//~ if (g_myMatrix[x][y][0] <= 0.45) color = "green";
-			//~ if (g_myMatrix[x][y][0] >= 0.55) color = "red";
 			var color = "rgb(" + red + "," + green + ", 0)";
 			myContext.fillStyle = color;
 			myContext.fillRect(x*4, y*4, 4, 4);
