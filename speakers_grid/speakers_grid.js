@@ -11,6 +11,7 @@ var g_initScenario = "random";
 var g_lambda = 0.5; // how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
 var g_memoryLimit = 20; //10: very fast change, 100: very slow change
 var g_alphaBias = 1; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+var g_errorRate = 0;
 
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
@@ -91,7 +92,9 @@ function setWeighting(s) {
 	document.getElementById("alphaBiasSlider").disabled = myDisabled;
 }
 
-
+function setErrorRate(i) {
+	g_errorRate = i;
+}
 function initSim() {
 	var myCanvas = document.getElementById("simCanvas");
 	var myContext = myCanvas.getContext("2d");
@@ -222,8 +225,8 @@ function communicate(agentCoords, neighborCoords) {
 	var yNeighbor = neighborCoords[1];
 	
 	//store in memory
-	var agentMemory = truncateMemory(utteranceNeighbor + g_myMatrix[xAgent][yAgent][1]);
-	var neighborMemory = truncateMemory(utteranceAgent + g_myMatrix[xNeighbor][yNeighbor][1]);
+	var agentMemory = truncateMemory(applyError(utteranceNeighbor) + g_myMatrix[xAgent][yAgent][1]);
+	var neighborMemory = truncateMemory(applyError(utteranceAgent) + g_myMatrix[xNeighbor][yNeighbor][1]);
 	
 	// adapt grammar
 	var agentGrammar = g_myMatrix[xAgent][yAgent][0];
@@ -262,6 +265,21 @@ function countARatio(memory) {
 function truncateMemory(memory) {
 	if (memory.length > g_memoryLimit) memory = memory.substring(0, g_memoryLimit); 
 	return memory;
+}
+
+function applyError(s) { // (potentially) introduce misunderstandings between speaker and hearer
+	var result = "";
+	for (var i = 0; i < s.length; i++) {
+		var thisChar = s[i];
+		var thisResultChar = thisChar;
+		if (Math.random() < g_errorRate) {
+			if (thisChar === "α") thisResultChar = "β";
+			else  thisResultChar = "α";
+			console.log("error! speaker said: " + thisChar + ", but hearer heard: " + thisResultChar);
+		}
+		result += thisResultChar;
+	}
+	return result;
 }
 
 function drawToCanvas() {

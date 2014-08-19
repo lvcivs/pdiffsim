@@ -27,6 +27,7 @@
       
  			weighting: <input name="weighting" type="radio" onclick="setWeighting(value)" value="none" checked> none (neutral interaction) <input name="weighting" type="radio" onclick="setWeighting(value)" value="weighted"> weighted<br>
       <span id="alphaBiasSpan" class="grayed">alpha bias: <input id="alphaBiasSlider" type="range" min="0.5" max="1.5" value="1" step="0.05" disabled oninput="document.querySelector('#alphaBiasSliderOutput').value = value;setAlphaBias(value)"></input><output for="alphaBiasSlider" id="alphaBiasSliderOutput">1</output></span><br>
+      error rate: <input id="errorRateSlider" type="range" min="0.000" max="0.010" value="0.000" step="0.001" oninput="document.querySelector('#errorRateOutput').value = value;setErrorRate(value)"></input><output for="errorRateSlider" id="errorRateOutput">0.000</output><br>
 
       
     </select>
