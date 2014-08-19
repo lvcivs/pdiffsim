@@ -10,14 +10,25 @@
 	<h2>Speakers (grid)</h2>
 		<div id="controls">
 			<form>
-			<input id='init' type="button" onclick="initSim()" value="init"></input>
-			<input id='step' type="button" onclick="stepSim()" value="step"></input>
-			<input id='runstop' type="button" onclick="runSim()" value="run/stop"></input><br>
-			grid size: <input name="gridSize" type="radio" onclick="setGridSize(20)" value="20" checked> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80<br>
+			<input id='initButton' type="button" onclick="initSim()" value="init"></input>
+			<input id='stepButton' type="button" onclick="stepSim()" value="step" disabled></input>
+			<input id='runStopButton' type="button" onclick="runSim()" value="run/stop" disabled></input><br>
+
+			grid size: <input name="gridSize" type="radio" onclick="setGridSize(20)" value="20"> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80<br>
+
 			init scenario: <select name="initScenario"  onchange="chooseInitScenario(this.form.initScenario.options[this.form.initScenario.selectedIndex].value)" size="1">
       <option value="random" selected>random</option>
       <option value="two fields">two fields</option>
       <option value="island">island</option>
+      </select><br>
+
+      memory limit: <input id="memorySlider" type="range" min="0" max="100" value="20" oninput="document.querySelector('#memoryOutput').value = value;setMemory(value)"></input><output for="memorySlider" id="memoryOutput">20</output><br>
+      lambda value: <input id="lambdaSlider" type="range" min="0" max="1" value="0.5" step="0.1" oninput="document.querySelector('#lambdaSliderOutput').value = value;setLambda(value)"></input><output for="lambdaSlider" id="lambdaSliderOutput">0.5</output><br>
+      
+ 			weighting: <input name="weighting" type="radio" onclick="setWeighting(value)" value="none" checked> none (neutral interaction) <input name="weighting" type="radio" onclick="setWeighting(value)" value="weighted"> weighted<br>
+      <span id="alphaBiasSpan" class="grayed">alpha bias: <input id="alphaBiasSlider" type="range" min="0.5" max="1.5" value="1" step="0.05" disabled oninput="document.querySelector('#alphaBiasSliderOutput').value = value;setAlphaBias(value)"></input><output for="alphaBiasSlider" id="alphaBiasSliderOutput">1</output></span><br>
+
+      
     </select>
     </form>
 		</div>

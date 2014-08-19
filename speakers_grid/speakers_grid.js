@@ -10,7 +10,7 @@ var g_initScenario = "random";
 
 var g_lambda = 0.5; // how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
 var g_memoryLimit = 20; //10: very fast change, 100: very slow change
-var g_alpha_bias = 1.2; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+var g_alphaBias = 1.2; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
 	var arr = [];
@@ -27,6 +27,9 @@ function matrix(rows, cols, defaultValue) {
 
 
 function setGridSize(i) {
+	
+	stopSim();
+	
 	g_width = i;
 	g_height = i;
 	g_myMatrix = 0;
@@ -46,12 +49,53 @@ function chooseInitScenario(s) {
 	
 }
 
+function setMemory(i) {
+	g_memoryLimit = i;
+}
+
+function setLambda(i) {
+	g_lambda = i;
+}
+
+function setAlphaBias(i) {
+	g_alphaBias = i;
+}
+
+function setMemory(i) {
+	g_memoryLimit = i;
+}
+
+function setLambda(i) {
+	g_lambda = i;
+}
+
+function setAlphaBias(i) {
+	g_alphaBias = i;
+}
+
+function setWeighting(s) {
+	var myClassName = "";
+	var myDisabled = true;
+	if (s === "none") {
+		g_alphaBias = 1;
+		myClassName = "grayed";
+		myDisabled = true;
+	} else if (s === "weighted") {
+		myClassName = "";
+		myDisabled = false;
+	}
+	document.getElementById("alphaBiasSpan").className = myClassName;
+	document.getElementById("alphaBiasSlider").disabled = myDisabled;
+}
+
 
 function initSim() {
 	var myCanvas = document.getElementById("simCanvas");
 	var myContext = myCanvas.getContext("2d");
 	
 	g_tick = 0;
+	document.getElementById("stepButton").disabled = false;
+	document.getElementById("runStopButton").disabled = false;
 
 	g_myMatrix = matrix(g_height, g_width, 0);// initial probability, initial memory
 	
@@ -98,12 +142,20 @@ function initSim() {
 
 function runSim() { // run or stop
 	if (!g_running) {
-		 g_interval = setInterval(stepSim,50);
-		 g_running = 1;
+		g_interval = setInterval(stepSim,50);
+		g_running = 1;
+		document.getElementById("initButton").disabled = true;
+		document.getElementById("stepButton").disabled = true;
 	} else {
-		clearInterval(g_interval);
-		g_running = 0;
+		stopSim();
 	}
+}
+
+function stopSim() {
+	clearInterval(g_interval);
+	g_running = 0;
+	document.getElementById("initButton").disabled = false;
+	document.getElementById("stepButton").disabled = false;
 }
 
 function stepSim() {
@@ -189,7 +241,7 @@ function produceUtterance(agentCoords) {
 	for (var i = 0; i < 10; i++) {
 		var myRand = Math.random();
 		var agentGrammar = g_myMatrix[x][y][0];
-		if (myRand <= agentGrammar * g_alpha_bias) u += "α"; 
+		if (myRand <= agentGrammar * g_alphaBias) u += "α"; 
 		else u += "β"; 
 	}
 	return u;

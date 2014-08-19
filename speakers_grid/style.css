@@ -25,6 +25,10 @@ body a {
 	}
 
 #data {
-	color:grey;
+	color:gray;
 	font-size:smaller;
+}
+
+.grayed {
+	color:gray;
 }
