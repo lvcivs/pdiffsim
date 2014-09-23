@@ -16,8 +16,18 @@ body a {
 
 
 #content {
-	width:640px;
+	width:800px;
 	margin: 5% auto;
+}
+
+#main {
+	width:400px;
+	float:left;
+}
+
+#sidebar {
+	width:400px;
+	float:right;
 }
 
 #controls {

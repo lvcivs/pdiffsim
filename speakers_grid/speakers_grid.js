@@ -275,7 +275,7 @@ function applyError(s) { // (potentially) introduce misunderstandings between sp
 		if (Math.random() < g_errorRate) {
 			if (thisChar === "α") thisResultChar = "β";
 			else  thisResultChar = "α";
-			console.log("error! speaker said: " + thisChar + ", but hearer heard: " + thisResultChar);
+			//~ console.log("error! speaker said: " + thisChar + ", but hearer heard: " + thisResultChar);
 		}
 		result += thisResultChar;
 	}
