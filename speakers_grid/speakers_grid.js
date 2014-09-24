@@ -99,6 +99,13 @@ function initSim() {
 	var myCanvas = document.getElementById("simCanvas");
 	var myContext = myCanvas.getContext("2d");
 	
+	// clear canvases
+	var plotCanvas = document.getElementById("plotCanvas");
+	var plotContext = plotCanvas.getContext("2d");
+	myCanvas.width = myCanvas.width;
+	plotCanvas.width = plotCanvas.width;
+
+	
 	g_tick = 0;
 	document.getElementById("stepButton").disabled = false;
 	document.getElementById("runStopButton").disabled = false;
@@ -285,6 +292,8 @@ function applyError(s) { // (potentially) introduce misunderstandings between sp
 function drawToCanvas() {
 	var myCanvas = document.getElementById("simCanvas");
 	var myContext = myCanvas.getContext("2d");
+	
+	var sumGValues = 0;
 
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
@@ -294,8 +303,22 @@ function drawToCanvas() {
 			var color = "rgb(" + red + "," + green + ", 0)";
 			myContext.fillStyle = color;
 			myContext.fillRect(x*4, y*4, 4, 4);
+			
+			sumGValues += p;
 		}
 	}
 	document.getElementById('ticks').innerHTML = g_tick;
+	
+	// plot
+	var plotCanvas = document.getElementById("plotCanvas");
+	var plotContext = plotCanvas.getContext("2d");
+	var sumAgents = g_width * g_height;
+	var alpha_y = 100/sumAgents*sumGValues;
+	var beta_y = 100/sumAgents*(sumAgents - sumGValues);
+	
+	plotContext.fillStyle = "green";
+	plotContext.fillRect(g_tick+5, 100-alpha_y, 2, 2);
+	plotContext.fillStyle = "red";
+	plotContext.fillRect(g_tick+5, 100-beta_y, 2, 2);
 }
 
