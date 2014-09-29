@@ -13,6 +13,10 @@ body a {
 #simCanvas {
   border: none;
 }
+#plotCanvas {
+  border: none;
+  margin-top:1em;
+}
 
 
 #content {

@@ -105,6 +105,14 @@ function initSim() {
 	myCanvas.width = myCanvas.width;
 	plotCanvas.width = plotCanvas.width;
 
+	// draw lines on plot canvas
+	plotContext.fillStyle = "#ccc";
+	plotContext.font = 'bold 8pt Arial'
+	for (var i = 0; i < 5; i++) {
+		plotContext.fillRect(0, i*25, 800, 1);
+		plotContext.fillText((100-(i*25)).toString(), 10, 10+i*25);
+	}
+
 	
 	g_tick = 0;
 	document.getElementById("stepButton").disabled = false;

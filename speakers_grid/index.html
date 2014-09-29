@@ -14,26 +14,26 @@
 			
 			<table style="width:100%">
 			<tr><td>Grid size: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> Change the size of the grid in which the agents are arranged. The sizes are 20x20 (400 agents), 40x40 (1600 agents) or 80x80 (6400 agents).</span></a> </td>
-			<td><input name="gridSize" type="radio" onclick="setGridSize(20)" value="20"> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80"> 80x80 </td></tr>
+			<td><input name="gridSize" type="radio" onclick="setGridSize(20)" value="20" autocomplete="off"> 20x20 <input name="gridSize" type="radio" onclick="setGridSize(40)" value="40" checked autocomplete="off"> 40x40 <input name="gridSize" type="radio" onclick="setGridSize(80)" value="80" autocomplete="off"> 80x80 </td></tr>
 
 			<tr><td>Init scenario: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> Choose how the agents are initialized. This controls their initial grammar value, i.e. how likely they are to produce either one of the variants "α" or "β". In the visualization, this will show up as green / red colored agents.</span></a> </td>
-			<td><select name="initScenario"  onchange="chooseInitScenario(this.form.initScenario.options[this.form.initScenario.selectedIndex].value)" size="1">
+			<td><select name="initScenario"  onchange="chooseInitScenario(this.form.initScenario.options[this.form.initScenario.selectedIndex].value)" size="1" autocomplete="off">
       <option value="random" selected>random</option>
       <option value="two fields">two fields</option>
       <option value="island">island</option>
       </select></td></tr>
 
       <tr><td>Memory limit: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> Regulates how many utterances each agent can keep in his memory. Older items, which are over the limit, are simply discarded ("forgotten") by the agents. Larger values mean that the agents are slower to forget and are therefore slower to adopt innovations. </span></a></td>
-      <td> <input id="memorySlider" type="range" min="0" max="100" value="20" oninput="document.querySelector('#memoryOutput').value = value;setMemory(value)"></input><output for="memorySlider" id="memoryOutput">20</output></td></tr>
+      <td> <input id="memorySlider" type="range" min="0" max="100" value="20" oninput="document.querySelector('#memoryOutput').value = value;setMemory(value)" autocomplete="off"></input><output for="memorySlider" id="memoryOutput">20</output></td></tr>
        <tr><td>Lambda value: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> The lambda value controls how strongly the agents react to new input. The lambda value is used in the calculation of the agents new grammar, after they exchanged some utterances and adjust their grammar accordingly. Larger values mean that the agents respond more strongly to new input.</span></a></td>
-       <td> <input id="lambdaSlider" type="range" min="0" max="1" value="0.5" step="0.1" oninput="document.querySelector('#lambdaSliderOutput').value = value;setLambda(value)"></input><output for="lambdaSlider" id="lambdaSliderOutput">0.5</output></td></tr>
+       <td> <input id="lambdaSlider" type="range" min="0" max="1" value="0.5" step="0.1" oninput="document.querySelector('#lambdaSliderOutput').value = value;setLambda(value)" autocomplete="off"></input><output for="lambdaSlider" id="lambdaSliderOutput">0.5</output></td></tr>
       
  			<tr><td>Weighting: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> This option allows to give one of the two variants, in this case "α", some additional weight (either positive or negative). Using the weighting means that the agents will have an inherited bias towards either "α" and "β". The weighting could correspond to a variety of factors in real speaker interaction, e.g. higher prestige, higher efficiency of production, higher communication success rate etc. No weighting corresponds to the "neutral interaction" scenario.</span></a></td>
- 			<td> <input name="weighting" type="radio" onclick="setWeighting(value)" value="none" checked> none <input name="weighting" type="radio" onclick="setWeighting(value)" value="weighted"> weighted</td></tr>
+ 			<td> <input name="weighting" type="radio" onclick="setWeighting(value)" value="none" checked autocomplete="off"> none <input name="weighting" type="radio" onclick="setWeighting(value)" value="weighted" autocomplete="off"> weighted</td></tr>
       <tr><td><span id="alphaBiasSpan" class="grayed">Alpha bias:</td>
-      <td> <input id="alphaBiasSlider" type="range" min="0.5" max="1.5" value="1" step="0.05" disabled oninput="document.querySelector('#alphaBiasSliderOutput').value = value;setAlphaBias(value)"></input><output for="alphaBiasSlider" id="alphaBiasSliderOutput">1</output></span></td></tr>
-      <tr><td>Error rate: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> This option controls how likely the hearers are to misunderstand an utterance. In other words, it determines how likely it is that, given that speaker X says "α", hearer Y mistakenly hears "β". This value is by default 0, i.e. there no misunderstandings.</span></a></td>
-      <td> <input id="errorRateSlider" type="range" min="0.000" max="0.010" value="0.000" step="0.001" oninput="document.querySelector('#errorRateOutput').value = value;setErrorRate(value)"></input><output for="errorRateSlider" id="errorRateOutput">0.000</output></td></tr>
+      <td> <input id="alphaBiasSlider" type="range" min="0.5" max="1.5" value="1" step="0.05" disabled oninput="document.querySelector('#alphaBiasSliderOutput').value = value;setAlphaBias(value)" autocomplete="off"></input><output for="alphaBiasSlider" id="alphaBiasSliderOutput">1</output></span></td></tr>
+      <tr><td>Error rate: <a href="#" class="tooltip"><img class="tooltip" src="../circled-i.png" /><span><img class="callout" src="../callout.gif" /> This option controls how likely the hearers are to misunderstand an utterance. In other words, it determines how likely it is that, given that speaker X says "α", hearer Y mistakenly hears "β". This value is by default 0, i.e. there are no misunderstandings.</span></a></td>
+      <td> <input id="errorRateSlider" type="range" min="0.000" max="0.010" value="0.000" step="0.001" oninput="document.querySelector('#errorRateOutput').value = value;setErrorRate(value)"  autocomplete="off"></input><output for="errorRateSlider" id="errorRateOutput">0.000</output></td></tr>
     </table>
 
 		</div>
