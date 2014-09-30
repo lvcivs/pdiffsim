@@ -306,7 +306,7 @@ function drawToCanvas() {
 	for (var x = 0; x < g_width; x++) {
 		for (var y = 0; y < g_height; y++) {
 			var p = g_myMatrix[x][y][0];
-			var green = Math.floor(255*p);
+			var green = Math.floor(128*p); // green according to CSS color definition
 			var red = Math.floor(255*(1-p));
 			var color = "rgb(" + red + "," + green + ", 0)";
 			myContext.fillStyle = color;
