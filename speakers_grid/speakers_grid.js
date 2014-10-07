@@ -12,6 +12,7 @@ var g_lambda = 0.5; // how likely the agent is to change its behaviour; 0.2: slo
 var g_memoryLimit = 20; //10: very fast change, 100: very slow change
 var g_alphaBias = 1; // fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 var g_errorRate = 0;
+var g_neighborRange = 1;
 
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
@@ -76,6 +77,11 @@ function setLambda(i) {
 function setAlphaBias(i) {
 	g_alphaBias = i;
 }
+
+function setNeighborRange(i) {
+	g_neighborRange = i;
+}
+
 
 function setWeighting(s) {
 	var myClassName = "";
@@ -188,7 +194,7 @@ function stepSim() {
 	for (var x = g_width-1; x >= 0; x-- ) { 
 		for (var y = 0; y < g_height; y++) {
 			var agentCoords = [x, y];
-			var neighborCoords = selectNeighbor(x, y);
+			var neighborCoords = selectNeighbor(agentCoords);
 			communicate(agentCoords, neighborCoords); 
 			//~ console.log("agent " + agentCoords + " is now talking to " + neighborCoords);
 		}
@@ -197,7 +203,7 @@ function stepSim() {
 }
 
 
-function selectNeighbor(x, y) {
+function selectDirectNeighbor(x, y) {
 	var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
 	
 	// retry if coords are out of bounds
@@ -225,10 +231,44 @@ function borderCheck(xy) {
 	var y = xy[1];
 	if (x < 0) return false;
 	if (y < 0) return false;
-	if (x == g_width) return false;
-	if (y == g_height) return false;
+	if (x >= g_width) return false;
+	if (y >= g_height) return false;
 	return true;
 }
+
+function isValidNeighbor(coords1, coords2) {
+    if (!borderCheck(coords2)) return false;
+    if (coords1[0] == coords2[0] && coords1[1] == coords2[1]) return false;
+    return true;
+}
+
+// alternative code to find neighbor, does not need to be direct neighbor but up to n positions away
+// closer ones should be more likely to be chosen
+function selectNeighbor(thisAgent) {
+	var x_offset;
+	var y_offset;
+	var thisNeighbor;
+
+	// retry if coords are out of bounds
+	do { 
+		x_offset = findNeighborOffset(g_neighborRange);
+		y_offset = findNeighborOffset(g_neighborRange);
+		thisNeighbor = [thisAgent[0]+x_offset,thisAgent[1]+y_offset];
+	} 
+	while (! isValidNeighbor(thisAgent, thisNeighbor));
+	return thisNeighbor;
+}
+
+// calculate by how much this neighbor's coordinate shall be offset
+// using an exponential function, so that closer ones are more likely to be selected
+//  y = r^2*7
+// 50% chance of negative value
+function findNeighborOffset(max) {
+	var v = Math.round(Math.pow(Math.random(), 2) * max) ;
+	if (Math.floor(Math.random() * 2) === 1) v = v * -1;
+	return v;
+}
+
 function communicate(agentCoords, neighborCoords) {
 	var utteranceAgent = produceUtterance(agentCoords);
 	var utteranceNeighbor = produceUtterance(neighborCoords);
