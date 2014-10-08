@@ -14,6 +14,8 @@ var g_alphaBias = 1; // fitness of alpha, bias towards alpha (if given a choice 
 var g_errorRate = 0;
 var g_neighborRange = 1;
 
+var g_logValues = new Array();
+
 // matrix function from stackoverflow
 function matrix(rows, cols, defaultValue) {
 	var arr = [];
@@ -121,6 +123,7 @@ function initSim() {
 
 	
 	g_tick = 0;
+	g_logValues = new Array();
 	document.getElementById("stepButton").disabled = false;
 	document.getElementById("runStopButton").disabled = false;
 
@@ -363,10 +366,21 @@ function drawToCanvas() {
 	var sumAgents = g_width * g_height;
 	var alpha_y = 100/sumAgents*sumGValues;
 	var beta_y = 100/sumAgents*(sumAgents - sumGValues);
+	// save values for later export (e.g. for plotting in R)
+	g_logValues.push([g_tick, alpha_y, beta_y]);
 	
 	plotContext.fillStyle = "green";
 	plotContext.fillRect(g_tick+5, 100-alpha_y, 2, 2);
 	plotContext.fillStyle = "red";
 	plotContext.fillRect(g_tick+5, 100-beta_y, 2, 2);
+}
+
+function exportLogValues() {
+	var myWindow = window.open("", "Export Data");
+	myWindow.document.writeln("Ticks,AlphaY,BetaY<br>");
+	for (var i = 0; i < g_logValues.length; i++) {
+		var a = g_logValues[i];
+		myWindow.document.writeln(a[0] + "," + a[1] + "," + a[2] + "<br>");
+	}
 }
 
