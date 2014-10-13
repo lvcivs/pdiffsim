@@ -158,7 +158,7 @@ function initSim() {
 			for (var y = 0; y < g_height; y++) {
 				g_myMatrix[x][y] = [0, ""]; // probability of saying α, agent's memory (as a string)
 				var blockwidth = 4;
-				if (x > (g_width / 2) ) {
+				if (x >= (g_width / 2) ) {
 					g_myMatrix[x][y] = [1, ""];
 				}
 				
