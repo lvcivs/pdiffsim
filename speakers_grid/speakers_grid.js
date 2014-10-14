@@ -331,9 +331,9 @@ function applyError(s) { // (potentially) introduce misunderstandings between sp
 		var thisChar = s[i];
 		var thisResultChar = thisChar;
 		if (Math.random() < g_errorRate) {
-			if (thisChar === "α") thisResultChar = "β";
-			else  thisResultChar = "α";
-			//~ console.log("error! speaker said: " + thisChar + ", but hearer heard: " + thisResultChar);
+			//switch them around
+			if (thisChar === "β") thisResultChar = "α";
+			else thisResultChar = "β";			//~ console.log("error! speaker said: " + thisChar + ", but hearer heard: " + thisResultChar);
 		}
 		result += thisResultChar;
 	}
