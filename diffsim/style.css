@@ -1,0 +1,54 @@
+body {
+  background: white; 
+  color:black;
+}
+
+body h2 {
+	color:black;
+}
+body a {
+	color:black;
+}
+
+#simCanvas {
+  border: none;
+}
+#plotCanvas {
+  border: none;
+  margin-top:1em;
+}
+
+
+#content {
+	width:800px;
+	margin: 5% auto;
+}
+
+#main {
+	width:400px;
+	float:left;
+}
+
+#sidebar {
+	width:400px;
+	float:right;
+}
+
+#controls {
+	margin-bottom:2em;
+	}
+
+#data {
+	color:gray;
+	font-size:smaller;
+}
+
+.grayed {
+	color:gray;
+}
+
+#exportLink {
+	font-size:smaller;
+}
+
+a.tooltip {outline:none; } a.tooltip strong {line-height:30px;} a.tooltip:hover {text-decoration:none;} a.tooltip span { z-index:10;display:none; padding:14px 20px; margin-top:-30px; margin-left:18px; width:300px; line-height:16px; } a.tooltip:hover span{ display:inline; position:absolute; color:#111; border:1px solid #DCA; background:#fffAF0;} .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;} /*CSS3 extras*/ a.tooltip span { border-radius:4px; box-shadow: 5px 5px 8px #CCC; }
