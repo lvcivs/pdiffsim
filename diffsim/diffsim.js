@@ -126,7 +126,7 @@ SimManager.prototype = {
 		myCanvas.width = myCanvas.width;
 		plotCanvas.width = plotCanvas.width;
 
-		// draw lines on plot canvas
+		// draw horizontal lines on plot canvas
 		plotContext.fillStyle = "#ccc";
 		plotContext.font = 'bold 8pt Arial'
 		for (var i = 0; i < 5; i++) {
@@ -134,19 +134,18 @@ SimManager.prototype = {
 			plotContext.fillText((100-(i * 25)).toString(), 10, 10 + i * 25);
 		}
 
-		
 		this.tick = 0;
 		this.logValues = new Array();
 		document.getElementById("stepButton").disabled = false;
 		document.getElementById("runStopButton").disabled = false;
 
-		this.myMatrix = matrix(this.height, this.width, 0);// initial probability, initial memory
+		this.myMatrix = matrix(this.height, this.width, 0);
 		
 		// purely random
 		if (this.initScenario === "random") {
 			for (var x = 0; x < this.width; x++) {
 				for (var y = 0; y < this.height; y++) {
-					this.myMatrix[x][y] = [0.5 + (Math.random() - 0.5) / 2, ""]; // probability of saying α
+					this.myMatrix[x][y] = [0.5 + (Math.random() - 0.5) / 2, ""]; // probability of saying α, agent's memory (as a string)
 				}
 			}
 		}
@@ -155,7 +154,7 @@ SimManager.prototype = {
 		if (this.initScenario === "island") {
 			for (var x = 0; x < this.width; x++) {
 				for (var y = 0; y < this.height; y++) {
-					this.myMatrix[x][y] = [0, ""]; // probability of saying α
+					this.myMatrix[x][y] = [0, ""];
 					var blockwidth = 4;
 					if (x > (this.width / 2) - (blockwidth / 2) && x < (this.width / 2) + (blockwidth / 2) && y > (this.height / 2) - (blockwidth / 2) && y < (this.height / 2) + (blockwidth / 2) ) {
 						this.myMatrix[x][y] = [1, ""];
@@ -169,7 +168,7 @@ SimManager.prototype = {
 		if (this.initScenario === "two fields") {
 			for (var x = 0; x < this.width; x++) {
 				for (var y = 0; y < this.height; y++) {
-					this.myMatrix[x][y] = [0, ""]; // probability of saying α, agent's memory (as a string)
+					this.myMatrix[x][y] = [0, ""];
 					var blockwidth = 4;
 					if (x >= (this.width / 2) ) {
 						this.myMatrix[x][y] = [1, ""];
@@ -184,7 +183,6 @@ SimManager.prototype = {
 
 	runSim : function() { // run or stop
 		if (!this.running) {
-			//~ this.interval = setInterval(this.stepSim, 50);
 			this.interval = setInterval(function() {g_simManager.stepSim();}, 50);
 			this.running = 1;
 			document.getElementById("initButton").disabled = true;
@@ -206,7 +204,6 @@ SimManager.prototype = {
 		var neighbor = 0;
 		this.tick++;
 
-		//~ for (var x = 0; x < g_width; x++) {
 		for (var x = this.width-1; x >= 0; x-- ) { 
 			for (var y = 0; y < this.height; y++) {
 				var agentCoords = [x, y];
@@ -232,6 +229,7 @@ SimManager.prototype = {
 	},
 
 
+// choose among one of eight direct neighbors
 //~ function selectDirectNeighbor(x, y) {
 	//~ var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
 	//~ 
@@ -331,7 +329,7 @@ SimManager.prototype = {
 		for (var i = 0; i < 10; i++) {
 			var myRand = Math.random();
 			var agentGrammar = this.myMatrix[x][y][0];
-			if (myRand <= agentGrammar * this.alphaBias) u += "α"; // should check this, multiplication good approach?
+			if (myRand <= agentGrammar * this.alphaBias) u += "α"; // bias is implemented by multiplication
 			else u += "β"; 
 		}
 		return u;
@@ -366,6 +364,7 @@ SimManager.prototype = {
 		return result;
 	},
 	
+	// export the plot values, in a CSV format to be processed by e.g. R
 	exportLogValues : function() {
 		var myWindow = window.open("", "Export Data");
 		myWindow.document.writeln("Ticks,AlphaY,BetaY<br>");
@@ -388,7 +387,6 @@ function SimView(simManager) {
 
 SimView.prototype = {
 	updateGUI : function() {
-		// update HTML GUI
 		document.querySelector('#ticks').innerHTML = this.simManager.tick;
 		document.querySelector('#memorySizeSliderOutput').innerHTML = this.simManager.memorySize;
 		document.querySelector('#lambdaSliderOutput').innerHTML = this.simManager.lambda;
@@ -398,7 +396,6 @@ SimView.prototype = {
 	},
 	
 	drawToCanvas : function() {
-
 		var myCanvas = document.getElementById("simCanvas");
 		var myContext = myCanvas.getContext("2d");
 		
@@ -418,7 +415,7 @@ SimView.prototype = {
 			}
 		}
 				
-		// plot
+		// draw plot
 		var plotCanvas = document.getElementById("plotCanvas");
 		var plotContext = plotCanvas.getContext("2d");
 		var sumAgents = this.simManager.width * this.simManager.height;
@@ -433,6 +430,7 @@ SimView.prototype = {
 	
 }
 
+// global variables
 var g_simManager = 0;
 var g_simView = 0;
 
