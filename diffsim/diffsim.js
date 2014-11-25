@@ -389,12 +389,12 @@ function SimView(simManager) {
 SimView.prototype = {
 	updateGUI : function() {
 		// update HTML GUI
-		document.getElementById('ticks').innerHTML = this.simManager.tick;
-		document.getElementById('memorySizeSliderOutput').value = this.simManager.memorySize;
-		document.getElementById('lambdaSliderOutput').value = this.simManager.lambda;
-		document.getElementById('neighborRangeSliderOutput').value = this.simManager.neighborRange;
-		document.getElementById('alphaBiasSliderOutput').value = this.simManager.alphaBias;
-		document.getElementById('errorRateSliderOutput').value = this.simManager.errorRate;
+		document.querySelector('#ticks').innerHTML = this.simManager.tick;
+		document.querySelector('#memorySizeSliderOutput').innerHTML = this.simManager.memorySize;
+		document.querySelector('#lambdaSliderOutput').innerHTML = this.simManager.lambda;
+		document.querySelector('#neighborRangeSliderOutput').innerHTML = this.simManager.neighborRange;
+		document.querySelector('#alphaBiasSliderOutput').innerHTML = this.simManager.alphaBias;
+		document.querySelector('#errorRateSliderOutput').innerHTML = this.simManager.errorRate;
 	},
 	
 	drawToCanvas : function() {
@@ -442,24 +442,56 @@ window.onload = function() {
 	g_simView = new SimView(g_simManager);
 
 	// attach GUI event listeners
-	document.querySelector("#memorySizeSlider").oninput = function() {g_simManager.setMemorySize(this.value);}
-	document.querySelector("#lambdaSlider").oninput = function() {g_simManager.setLambda(this.value);}
-	document.querySelector("#neighborRangeSlider").oninput = function() {g_simManager.setNeighborRange(this.value);}
-	document.querySelector("#alphaBiasSlider").oninput = function() {g_simManager.setAlphaBias(this.value);}
-	document.querySelector("#errorRateSlider").oninput = function() {g_simManager.setErrorRate(this.value);}
+	document.querySelector("#memorySizeSlider").addEventListener('change', function() {
+		g_simManager.setMemorySize(this.value);
+	}, false);
+	document.querySelector("#lambdaSlider").addEventListener('change', function() {
+		g_simManager.setLambda(this.value);
+	}, false);
+	document.querySelector("#neighborRangeSlider").addEventListener('change', function() {
+		g_simManager.setNeighborRange(this.value);
+	}, false);
+	document.querySelector("#alphaBiasSlider").addEventListener('change', function() {
+		g_simManager.setAlphaBias(this.value);
+	}, false);
+	document.querySelector("#errorRateSlider").addEventListener('change', function() {
+		g_simManager.setErrorRate(this.value);
+	}, false);
 	
-	document.querySelector("#gridSizeRadio20").onclick = function() {g_simManager.setGridSize(20);};
-	document.querySelector("#gridSizeRadio40").onclick = function() {g_simManager.setGridSize(40);};
-	document.querySelector("#gridSizeRadio80").onclick = function() {g_simManager.setGridSize(80);};
+
+	document.querySelector("#gridSizeRadio20").addEventListener('click', function() {
+		g_simManager.setGridSize(20);
+	}, false);
+	document.querySelector("#gridSizeRadio40").addEventListener('click', function() {
+		g_simManager.setGridSize(40);
+	}, false);
+	document.querySelector("#gridSizeRadio80").addEventListener('click', function() {
+		g_simManager.setGridSize(80);
+	}, false);
 		
-	document.querySelector("#initScenario").onchange = function() {g_simManager.chooseInitScenario(this[this.selectedIndex].value)};
+	document.querySelector("#initScenario").addEventListener('change',  function() {
+		g_simManager.chooseInitScenario(this[this.selectedIndex].value)
+	}, false);
 	
-	document.querySelector("#weightingoff").onclick = function() {g_simManager.setWeighting("none");};
-	document.querySelector("#weightingon").onclick = function() {g_simManager.setWeighting("weighted");};
-	
-	document.querySelector("#initButton").onclick = function() {g_simManager.initSim();}; 
-	document.querySelector("#stepButton").onclick = function() {g_simManager.stepSim();}; 
-	document.querySelector("#runStopButton").onclick = function() {g_simManager.runSim();}; 
-	document.querySelector("#exportLink").onclick = function() {g_simManager.exportLogValues();}; 
+	document.querySelector("#weightingoff").addEventListener('click', function() {
+		g_simManager.setWeighting("none");
+	}, false);
+	document.querySelector("#weightingon").addEventListener('click', function() {
+		g_simManager.setWeighting("weighted");
+	}, false);
+		
+	document.querySelector("#initButton").addEventListener('click', function() {
+		g_simManager.initSim();
+	}, false);
+	document.querySelector("#stepButton").addEventListener('click', function() {
+		g_simManager.stepSim();
+	}, false);
+	document.querySelector("#runStopButton").addEventListener('click', function() {
+		g_simManager.runSim();
+	}, false);
+	document.querySelector("#exportLink").addEventListener('click', function() {
+		g_simManager.exportLogValues();
+	}, false);
+
 }
 
