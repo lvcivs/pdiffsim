@@ -228,19 +228,6 @@ SimManager.prototype = {
 		this.simStepEvent.notify();
 	},
 
-
-// choose among one of eight direct neighbors
-//~ function selectDirectNeighbor(x, y) {
-	//~ var neighbors = [[x-1,y], [x,y-1], [x+1,y], [x,y+1], [x-1,y-1], [x+1,y-1], [x-1,y+1], [x+1,y+1]];
-	//~ 
-	//~ // retry if coords are out of bounds
-	//~ var i = 0;
-	//~ do { i = Math.floor((Math.random()*1000)%8);
-	//~ } 
-	//~ while (! borderCheck(neighbors[i]));
-	//~ return neighbors[i];
-//~ }
-
 // endless space (wrap neighbors over border)
 //~ function borderCheck(xy) {
 	//~ var x = xy[0];
