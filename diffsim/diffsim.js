@@ -1,3 +1,6 @@
+// diffsim.js
+// author: luzius thöny
+
 // UTIL: matrix function
 function matrix(rows, cols, defaultValue) {
 	var a = [];
