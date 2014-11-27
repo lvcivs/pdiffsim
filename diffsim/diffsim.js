@@ -1,5 +1,5 @@
 // diffsim.js
-// author: luzius thöny
+// author: luzius thöny <luzius@ling.su.se>
 
 // UTIL: matrix function
 function matrix(rows, cols, defaultValue) {
@@ -304,8 +304,8 @@ SimManager.prototype = {
 		var agentGrammar = this.myMatrix[xAgent][yAgent][0];
 		var neighborGrammar = this.myMatrix[xNeighbor][yNeighbor][0];
 		
-		var agentGrammarNew = agentGrammar + this.lambda*(this.countARatio(agentMemory) - agentGrammar);
-		var neighborGrammarNew = neighborGrammar + this.lambda*(this.countARatio(neighborMemory) - neighborGrammar);
+		var agentGrammarNew = agentGrammar + this.lambda * (this.countARatio(agentMemory) - agentGrammar);
+		var neighborGrammarNew = neighborGrammar + this.lambda * (this.countARatio(neighborMemory) - neighborGrammar);
 
 		this.myMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory];
 		this.myMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory];
