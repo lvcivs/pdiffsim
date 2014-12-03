@@ -7,7 +7,7 @@ lucius.antonius@gmail.com
 
 """
 
-import sys, random, math, configparser, time #, numpy
+import sys, random, math, configparser, time, threading #, numpy
 try:
 	from PyQt4 import QtGui, QtCore
 except ImportError:
@@ -22,24 +22,25 @@ class SimWidget(QtGui.QWidget):
 		self.simManager = simManager
 		
 		# make the GUI update itself whenever the simulation is advanced
-		simManager.simStepEvent.attach(self.update)
-
-	def startTimer(self, runs):
+		simManager.visUpdateEvent.attach(self.update)
+		
+	def startTimer(self, milliseconds, runs):
 		# this timer allows to run the simulation automatically in a loop for n runs
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.incrementTimer)
-		self.timer.start(10)
+		self.timer.start(milliseconds)
 		self.timerCount = 0
 		self.timerRuns = runs
-	
+
 	def incrementTimer(self):
 		self.timerCount += 1 
-		if self.timerCount >= self.timerRuns:
+		if self.timerCount > self.timerRuns:
 			self.timer.stop()
 			self.simManager.exportLogValues()
 		else:
 			self.simManager.stepSim()
-		
+
+
 	def initUI(self):      
 		#~ self.setGeometry(300, 300, 280, 170)
 		self.setGeometry(1800, 300, 600, 600)
@@ -69,6 +70,7 @@ class SimWidget(QtGui.QWidget):
 				#~ sumGValues += p
 	def closeEvent(self, e):
 		self.simManager.exportLogValues()
+		print("exiting.")
 		e.accept()
 """
 """
@@ -83,6 +85,7 @@ class Event:
 	def fire(self):
 		for listener in self.listeners:
 			listener()
+			#~ print("event fired: " + str(listener))
 
 
 class SimManager:
@@ -107,15 +110,13 @@ class SimManager:
 		self.logFileName = ""
 		self.logValues = []
 		
-		self.simStepEvent = Event()
+		self.visUpdateEvent = Event()
 
-		self.initSim()
-		
 	def setLogFileName(self, s):
 		self.logFileName = s
 
 	def setGridSize(self, i):
-		self.stopSim()
+		#~ self.stopSim()
 		self.tick = 0
 
 		self.width = i
@@ -127,19 +128,19 @@ class SimManager:
 	
 	def setLambdaValue(self, i):
 		self.lambdaValue = i
-		#~ self.guiEvent.notify()
+		self.visUpdateEvent.fire()
 	
 	def setAlphaBias(self, i):
 		self.alphaBias = i
-		#~ self.guiEvent.notify()
+		self.visUpdateEvent.fire()
 	
 	def setMemorySize(self, i):
 		self.memorySize = i
-		#~ self.guiEvent.notify()
+		self.visUpdateEvent.fire()
 
 	def setNeighborRange(self, i):
 		self.neighborRange = i
-		#~ self.guiEvent.notify()
+		self.visUpdateEvent.fire()
 	
 	def setWeighting(self, s):
 		myClassName = ""
@@ -154,7 +155,7 @@ class SimManager:
 
 	def setErrorRate(self, i):
 		self.errorRate = i
-		#~ self.guiEvent.notify()
+		self.visUpdateEvent.fire()
 
 	def initSim(self):
 		self.tick = 0
@@ -186,18 +187,18 @@ class SimManager:
 					if (x >= (width / 2) ):
 						self.myMatrix[x][y] = [1, ""]
 
-		self.simStepEvent.fire()
+		self.visUpdateEvent.fire()
 	
 
-	def runSim(self): # run or stop
-		if not running:
-			self.running = 1
-		else:
-			self.stopSim()
-
-	def stopSim(self):
-		#~ clearInterval(interval)
-		self.running = 0
+	#~ def runSim(self): # run or stop
+		#~ if not running:
+			#~ self.running = 1
+		#~ else:
+			#~ self.stopSim()
+#~ 
+	#~ def stopSim(self):
+		#~ #clearInterval(interval)
+		#~ self.running = 0
 
 	def stepSim(self):
 		self.neighbor = 0
@@ -221,7 +222,7 @@ class SimManager:
 		beta_y = 100 / sumAgents * (sumAgents - sumGValues)
 		self.logValues.append([self.tick, alpha_y, beta_y])
 
-		self.simStepEvent.fire()
+		self.visUpdateEvent.fire()
 	
 
 # endless space (wrap neighbors over border)
@@ -338,12 +339,14 @@ class SimManager:
 	
 	# export the plot values, in a CSV format to be processed by e.g. R
 	def exportLogValues(self):
+		print("writing to log file: " + self.logFileName)
 		f = open(self.logFileName, 'w')
 		f.write("Ticks,AlphaY,BetaY\n")
 		for i in range(len(self.logValues)):
 			a = self.logValues[i]
 			f.write(str(a[0]) + "," + str(a[1]) + "," + str(a[2]) + "\n")
 		f.close()
+
 
 
 # instantiate things
@@ -368,10 +371,11 @@ def main():
 	simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
 	simManager.setNeighborRange(config.getint('simulation', 'neighborRange'))
 	nogui = config.getboolean('simulation', 'nogui')
+	interactive = config.getboolean('simulation', 'interactive')
 	runs = config.getint('simulation', 'runs')
 	simManager.initSim()
 	
-	if (nogui == True):
+	if nogui:
 		for i in range(runs):
 			simManager.stepSim()
 		simManager.exportLogValues()
@@ -379,7 +383,8 @@ def main():
 	else:
 		app = QtGui.QApplication(sys.argv)
 		w = SimWidget(simManager)
-		w.startTimer(runs)
+		if not interactive:
+			w.startTimer(100, runs) # interval (in milliseconds), number of runs
 		sys.exit(app.exec_())
 
 
