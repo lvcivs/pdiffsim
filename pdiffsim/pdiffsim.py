@@ -94,6 +94,7 @@ def main():
 	simManager.setAlphaBias(config.getfloat('simulation', 'alphaBias'))
 	simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
 	simManager.setNeighborRange(config.getint('simulation', 'neighborRange'))
+	simManager.setUtteranceLength(config.getint('simulation', 'utteranceLength'))
 	nogui = config.getboolean('simulation', 'nogui')
 	interactive = config.getboolean('simulation', 'interactive')
 	runs = config.getint('simulation', 'runs')

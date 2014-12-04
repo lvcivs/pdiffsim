@@ -27,19 +27,20 @@ class SimManager:
 	def __init__(self):
 
 		self.myMatrix = []
-		self.width = 80
-		self.height = 80
+		self.width = 0
+		self.height = 0
 
 		self.running = 0
 		self.tick = 0
 
-		self.initScenario = "random"
+		self.initScenario = ""
 
-		self.lambdaValue = 0.5 # how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
-		self.memorySize = 20 #10: very fast change, 100: very slow change
-		self.alphaBias = 1 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+		self.lambdaValue = 0 # how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
+		self.memorySize = 0 #10: very fast change, 100: very slow change
+		self.alphaBias = 0 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 		self.errorRate = 0
-		self.neighborRange = 1
+		self.neighborRange = 0
+		self.utteranceLength = 0
 
 		self.logFileName = ""
 		self.logValues = []
@@ -89,6 +90,10 @@ class SimManager:
 
 	def setErrorRate(self, i):
 		self.errorRate = i
+		self.visUpdateEvent.fire()
+		
+	def setUtteranceLength(self, i):
+		self.utteranceLength = i
 		self.visUpdateEvent.fire()
 
 	def initSim(self):
@@ -240,7 +245,7 @@ class SimManager:
 		y = agentCoords[1]
 		u = ""
 		agentGrammar = self.myMatrix[x][y][0]
-		for i in range(10):
+		for i in range(self.utteranceLength):
 			myRand = random.random()
 			if (myRand <= agentGrammar * self.alphaBias): u += "α" # bias is implemented by multiplication
 			else: u += "β"
