@@ -200,10 +200,10 @@ class SimManager:
 				return thisNeighbor
 
 
-# calculate by how much this neighbor's coordinate shall be offset
-# using an exponential function, so that closer ones are more likely to be selected
-#  y = r^2*7
-# 50% chance of negative value
+	# calculate by how much this neighbor's coordinate shall be offset
+	# using an exponential function, so that closer ones are more likely to be selected
+	#  y = r^2*7
+	# 50% chance of negative value
 	def findNeighborOffset(self, maxValue):
 		v = int(round(math.pow(random.random(), 2) * maxValue, 0))
 		if (math.floor(random.random() * 2) == 1): v = v * -1
@@ -239,27 +239,22 @@ class SimManager:
 		x = agentCoords[0]
 		y = agentCoords[1]
 		u = ""
+		agentGrammar = self.myMatrix[x][y][0]
 		for i in range(10):
 			myRand = random.random()
-			agentGrammar = self.myMatrix[x][y][0]
 			if (myRand <= agentGrammar * self.alphaBias): u += "α" # bias is implemented by multiplication
 			else: u += "β"
-		#~ print("says: " + u)
-
 		return u
 
 	def countARatio(self, memory):
-		counter = 0
-		for i in range (len(memory)):
-			if (memory[i] == "α"): counter += 1
-		return counter/len(memory)
+		return memory.count('α')/len(memory)
 
 	def truncateMemory(self, memory):
-		if (len(memory) > self.memorySize): memory = memory[0:self.memorySize]
-		return memory
+		return memory[:self.memorySize]
 
 
 	def applyError(self, s): # (potentially) introduce misunderstandings between speaker and hearer
+		if self.errorRate == 0: return s
 		result = ""
 		for i in range(len(s)):
 			thisChar = s[i]
