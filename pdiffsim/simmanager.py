@@ -7,7 +7,7 @@ lucius.antonius@gmail.com
 
 """
 
-import random, math, time #, numpy
+import random, math, time, scipy, numpy #, numpy
 from distutils.dir_util import mkpath
 
 # UTIL
@@ -26,7 +26,8 @@ class SimManager:
 	
 	def __init__(self):
 
-		self.myMatrix = []
+		self.grammarMatrix = []
+		self.memoryMatrix = []
 		self.width = 0
 		self.height = 0
 
@@ -57,9 +58,7 @@ class SimManager:
 		#~ self.stopSim()
 		self.tick = 0
 
-		self.width = i
-		self.height = i
-		self.myMatrix = 0
+		self.width, self.height = i, i
 	
 	def setInitScenario(self, s):
 		self.initScenario = s
@@ -103,31 +102,35 @@ class SimManager:
 		self.tick = 0
 		self.logValues = []
 
-		self.myMatrix = [[0 for x in range(self.width)] for x in range(self.height)] 
+		self.grammarMatrix = [[0 for x in range(self.width)] for x in range(self.height)] 
+		self.memoryMatrix = [["" for x in range(self.width)] for x in range(self.height)] 
+		# numpy arrays; turns out to be slower, though
+		#~ self.grammarMatrix = scipy.empty((self.width, self.height))
+		#~ self.memoryMatrix = numpy.array([['' for x in range(self.width)] for x in range(self.height)], dtype="U10") # data type: Unicode, string length 10
 		
 		# purely random
 		if (self.initScenario == "random"):
 			for x in range(self.width):
 				for y in range(self.height):
-					self.myMatrix[x][y] = [0.5 + (random.random() - 0.5) / 2, ""]; # probability of saying α, agent's memory (as a string)
+					self.grammarMatrix[x][y] = 0.5 + (random.random() - 0.5) / 2 # probability of saying α, agent's memory (as a string)
 
 		#island
 		if (self.initScenario == "island"):
 			for x in range(self.width):
 				for y in range(self.height):
-					self.myMatrix[x][y] = [0, ""]
+					self.grammarMatrix[x][y] = 0
 					blockwidth = 4
 					if (x > (self.width / 2) - (blockwidth / 2) and x < (self.width / 2) + (blockwidth / 2) and y > (self.height / 2) - (blockwidth / 2) and y < (self.height / 2) + (blockwidth / 2) ):
-						self.myMatrix[x][y] = [1, ""]
+						self.grammarMatrix[x][y] = 1
 
 		#two fields
 		if (self.initScenario == "two fields"):
 			for x in range(self.width):
 				for y in range(self.height):
-					self.myMatrix[x][y] = [0, ""]
+					self.grammarMatrix[x][y] = 0
 					blockwidth = 4
 					if (x >= (width / 2) ):
-						self.myMatrix[x][y] = [1, ""]
+						self.grammarMatrix[x][y] = 1
 
 		self.startTime = time.time()
 
@@ -158,7 +161,7 @@ class SimManager:
 		sumGValues = 0
 		for x in range(self.width):
 			for y in range(self.height):
-				p = self.myMatrix[x][y][0]
+				p = self.grammarMatrix[x][y]
 				sumGValues += p
 
 		sumAgents = self.width * self.height
@@ -231,25 +234,27 @@ class SimManager:
 		yNeighbor = neighborCoords[1]
 		
 		#store in memory
-		agentMemory = self.truncateMemory(self.applyError(utteranceNeighbor) + self.myMatrix[xAgent][yAgent][1])
-		neighborMemory = self.truncateMemory(self.applyError(utteranceAgent) + self.myMatrix[xNeighbor][yNeighbor][1])
+		agentMemory = self.truncateMemory(self.applyError(utteranceNeighbor) + self.memoryMatrix[xAgent][yAgent])
+		neighborMemory = self.truncateMemory(self.applyError(utteranceAgent) + self.memoryMatrix[xNeighbor][yNeighbor])
 		
 		# adapt grammar
-		agentGrammar = self.myMatrix[xAgent][yAgent][0]
-		neighborGrammar = self.myMatrix[xNeighbor][yNeighbor][0]
+		agentGrammar = self.grammarMatrix[xAgent][yAgent]
+		neighborGrammar = self.grammarMatrix[xNeighbor][yNeighbor]
 		
 		agentGrammarNew = agentGrammar + self.lambdaValue * (self.countARatio(agentMemory) - agentGrammar)
 		neighborGrammarNew = neighborGrammar + self.lambdaValue * (self.countARatio(neighborMemory) - neighborGrammar)
 
-		self.myMatrix[xAgent][yAgent] = [agentGrammarNew, agentMemory]
-		self.myMatrix[xNeighbor][yNeighbor] = [neighborGrammarNew, neighborMemory]
+		self.grammarMatrix[xAgent][yAgent] = agentGrammarNew
+		self.grammarMatrix[xNeighbor][yNeighbor] = neighborGrammarNew
+		self.memoryMatrix[xAgent][yAgent] = agentMemory
+		self.memoryMatrix[xNeighbor][yNeighbor] = neighborMemory
 
 	
 	def produceUtterance(self, agentCoords):
 		x = agentCoords[0]
 		y = agentCoords[1]
 		u = ""
-		agentGrammar = self.myMatrix[x][y][0]
+		agentGrammar = self.grammarMatrix[x][y]
 		for i in range(self.utteranceLength):
 			myRand = random.random()
 			if (myRand <= agentGrammar * self.alphaBias): u += "α" # bias is implemented by multiplication
@@ -294,3 +299,14 @@ class SimManager:
 			a = self.logValues[i]
 			f.write(str(a[0]) + "," + str(a[1]) + "," + str(a[2]) + "\n")
 		f.close()
+		
+		#~ numpy.set_printoptions(threshold=numpy.inf)
+		grammarFileName = str(dirName + "grammar.dat")
+		f = open(grammarFileName, 'w')
+		f.write(str(self.grammarMatrix))
+		f.close()
+		memoryFileName = str(dirName + "memory.dat")
+		f = open(memoryFileName, 'w')
+		f.write(str(self.memoryMatrix))
+		f.close()
+
