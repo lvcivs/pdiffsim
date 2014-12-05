@@ -36,7 +36,7 @@ class SimWidget(QtGui.QWidget):
 		self.timerCount += 1 
 		if self.timerCount > self.timerRuns:
 			self.timer.stop()
-			self.simManager.exportLogValues()
+			self.simManager.exportData()
 		else:
 			self.simManager.stepSim()
 
@@ -68,7 +68,7 @@ class SimWidget(QtGui.QWidget):
 				
 				#~ sumGValues += p
 	def closeEvent(self, e):
-		self.simManager.exportLogValues()
+		self.simManager.exportData()
 		print("exiting.")
 		e.accept()
 
@@ -76,8 +76,7 @@ class SimWidget(QtGui.QWidget):
 # instantiate things
 
 def main():
-	startTime = time.time()
-	
+
 	if len(sys.argv) == 1 : 
 		print("No config file specified.\nUsage: pdiffsym.py [Config File]")
 		return
@@ -103,8 +102,7 @@ def main():
 	if nogui:
 		for i in range(runs):
 			simManager.stepSim()
-		simManager.exportLogValues()
-		print("--- elapsed time: %s seconds ---" % str(time.time() - startTime)) # note that this will depend on other work load on the machine, as well
+		simManager.exportData()
 	else:
 		app = QtGui.QApplication(sys.argv)
 		w = SimWidget(simManager)

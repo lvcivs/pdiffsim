@@ -8,7 +8,7 @@ lucius.antonius@gmail.com
 """
 
 import random, math, time #, numpy
-
+from distutils.dir_util import mkpath
 
 # UTIL
 class Event:
@@ -45,10 +45,13 @@ class SimManager:
 		self.logFileName = ""
 		self.logValues = []
 		
+		self.startTime = 0
+		
 		self.visUpdateEvent = Event()
 
 	def setLogFileName(self, s):
 		self.logFileName = s
+		
 
 	def setGridSize(self, i):
 		#~ self.stopSim()
@@ -125,6 +128,8 @@ class SimManager:
 					blockwidth = 4
 					if (x >= (width / 2) ):
 						self.myMatrix[x][y] = [1, ""]
+
+		self.startTime = time.time()
 
 		self.visUpdateEvent.fire()
 	
@@ -270,11 +275,20 @@ class SimManager:
 				else: thisResultChar = "β"
 			result += thisResultChar
 		return result
-	
-	# export the plot values, in a CSV format to be processed by e.g. R
-	def exportLogValues(self):
-		print("writing to log file: " + self.logFileName)
-		f = open(self.logFileName, 'w')
+
+	def exportData(self):
+		dirName = self.logFileName + '/'
+		mkpath("./" + dirName)
+		
+		# write log of this simulation run
+		f = open(dirName + self.logFileName, 'w')
+		f.write("logfile timestamp: " + time.strftime("%Y-%m-%d %H:%M:%S") + '\n')
+		f.write("elapsed time: %s seconds" % str(time.time() - self.startTime)) # note that this will depend on other work load on the machine, as well
+		f.close()
+		
+		# export the plot values, in a CSV format to be processed by e.g. R
+		datFileName = str(dirName + self.logFileName)[:-4] + '.dat'
+		f = open(datFileName, 'w')
 		f.write("Ticks,AlphaY,BetaY\n")
 		for i in range(len(self.logValues)):
 			a = self.logValues[i]
