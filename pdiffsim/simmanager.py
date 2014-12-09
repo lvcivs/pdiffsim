@@ -292,7 +292,11 @@ class SimManager:
 		# write log of this simulation run
 		f = open(dirName + self.logFileName, 'w')
 		f.write("logfile timestamp: " + time.strftime("%Y-%m-%d %H:%M:%S") + '\n')
-		f.write("elapsed time: %s seconds" % str(time.time() - self.startTime)) # note that this will depend on other work load on the machine, as well
+		delta = time.time() - self.startTime
+		m, s = divmod(delta, 60)
+		h, m = divmod(m, 60)
+		f.write("elapsed time: %d hours, %d minutes, %f seconds" % (h, m, s)) 
+		# note that this will depend on other work load on the machine, as well
 		f.close()
 		
 		# export the plot values, in a CSV format to be processed by e.g. R
@@ -324,7 +328,7 @@ class SimManager:
 				thisColor = [red, green, 0]
 				imgX = x * 4
 				imgY = y * 4
-				for i in range(4): imageMatrix[imgX+i][imgY:imgY+4] = thisColor
+				for i in range(4): imageMatrix[imgY+i][imgX:imgX+4] = thisColor
 		img = scipymisc.toimage(imageMatrix)
 		imgFileName = str(dirName + "final.png")
 		scipymisc.imsave(imgFileName, img)
