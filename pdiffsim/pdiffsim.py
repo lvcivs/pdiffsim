@@ -60,7 +60,7 @@ class SimWidget(QtGui.QWidget):
 		# draw simulation on grid
 		for x in range(self.simManager.width):
 			for y in range(self.simManager.height):
-				p = self.simManager.myMatrix[x][y][0]
+				p = self.simManager.grammarMatrix[x][y]
 				green = math.floor(128 * p); # green according to CSS color definition
 				red = math.floor(255 * (1 - p))
 				thisColor = QtGui.QColor(red, green, 0)
