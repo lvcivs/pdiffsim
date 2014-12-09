@@ -130,7 +130,7 @@ class SimManager:
 				for y in range(self.height):
 					self.grammarMatrix[x][y] = 0
 					blockwidth = 4
-					if (x >= (width / 2) ):
+					if (x >= (self.width / 2) ):
 						self.grammarMatrix[x][y] = 1
 
 		self.startTime = time.time()
@@ -245,6 +245,9 @@ class SimManager:
 		agentGrammarNew = agentGrammar + self.lambdaValue * (self.countARatio(agentMemory) - agentGrammar)
 		neighborGrammarNew = neighborGrammar + self.lambdaValue * (self.countARatio(neighborMemory) - neighborGrammar)
 
+		agentGrammarNew = round(agentGrammarNew, 10)
+		neighborGrammarNew = round(neighborGrammarNew, 10)
+		
 		self.grammarMatrix[xAgent][yAgent] = agentGrammarNew
 		self.grammarMatrix[xNeighbor][yNeighbor] = neighborGrammarNew
 		self.memoryMatrix[xAgent][yAgent] = agentMemory
