@@ -7,7 +7,8 @@ lucius.antonius@gmail.com
 
 """
 
-import random, math, time, scipy, numpy #, numpy
+import random, math, time, scipy, numpy
+import scipy.misc as scipymisc
 from distutils.dir_util import mkpath
 
 # UTIL
@@ -309,4 +310,21 @@ class SimManager:
 		f = open(memoryFileName, 'w')
 		f.write(str(self.memoryMatrix))
 		f.close()
+		
+		# prepare image matrix, save to file
+		imageMatrix = numpy.zeros((self.width*4, self.height*4, 3), dtype=numpy.uint8)
+		for x in range(self.width):
+			for y in range(self.height):
+				p = self.grammarMatrix[x][y]
+				green = math.floor(128 * p); # green according to CSS color definition
+				red = math.floor(255 * (1 - p))
+				thisColor = [red, green, 0]
+				imgX = x * 4
+				imgY = y * 4
+				for i in range(4): imageMatrix[imgX+i][imgY:imgY+4] = thisColor
+		img = scipymisc.toimage(imageMatrix)
+		imgFileName = str(dirName + "final.png")
+		scipymisc.imsave(imgFileName, img)
+
+
 
