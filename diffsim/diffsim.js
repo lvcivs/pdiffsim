@@ -229,6 +229,8 @@ SimManager.prototype = {
 		this.logValues.push([this.tick, alpha_y, beta_y]);
 
 		this.simStepEvent.notify();
+		this.guiEvent.notify();
+
 	},
 
 // endless space (wrap neighbors over border)
