@@ -1,10 +1,10 @@
 # how to run
-python3 pgdiffsim-gt.py offscreen
+python3 pgdiffsim_gt.py simulation1.cfg
 
 # had to manually install pycallgraph module, using pip3 (wouldn't work with python3 otherwise)
 # installs in $USER/.local !
 # later uninstalled, because didn't work
-pip3 install pycallgraph
+#~ pip3 install pycallgraph
 
 # simple timing of total execution speed
 time python3 pgdiffsim.py offscreen
