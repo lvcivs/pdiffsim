@@ -1,10 +1,18 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+author: Luzius Thöny
+lucius.antonius@gmail.com
 
-from graph_tool.all import *
+"""
+
+import sys, os, os.path, math
 from numpy.random import *
-import sys, os, os.path, math, configparser
+from distutils.dir_util import mkpath
+import configparser
+from graph_tool.all import *
+
 
 # We need some Gtk and gobject functions
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
@@ -16,24 +24,22 @@ if len(sys.argv) == 1 :
 	print("No config file specified.\nUsage: pdiffsym_gt.py [Config File]")
 	sys.exit(0)
 
+simManager = SimManager()
+logFileName = str(sys.argv[1])[:-4] + ".log"
+simManager.setLogFileName(logFileName)
+
 # Read config file
 config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
-simManager = SimManager()
-logFileName = str(sys.argv[1])[:-4] + ".log"
-simManager.setLogFileName(logFileName)
 speakers = config.getint('simulation', 'speakers')
 simManager.setSpeakers(speakers)
-#~ simManager.setInitScenario(config.get('simulation', 'initScenario'))
 simManager.setLambdaValue(config.getfloat('simulation', 'lambdaValue'))
 simManager.setMemorySize(config.getint('simulation', 'memorySize'))
 simManager.setAlphaBias(config.getfloat('simulation', 'alphaBias'))
 simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
-#~ simManager.setNeighborRange(config.getint('simulation', 'neighborRange'))
 simManager.setUtteranceLength(config.getint('simulation', 'utteranceLength'))
 nogui = config.getboolean('simulation', 'nogui')
-#~ interactive = config.getboolean('simulation', 'interactive')
 runs = config.getint('simulation', 'runs')
 
 
@@ -51,12 +57,7 @@ if nogui:
 													vertex_fill_color=simManager.colors)
 	win.add(win.graph)
 
-	for i in range(runs):
-		simManager.stepSim()
-	simManager.exportData()
-	print("done running the simulation. exported data.")
 
-	
 else:
 	win = GraphWindow(simManager.myGraph, simManager.pos, geometry=(500, 400),
 										edge_color=[0.6, 0.6, 0.6, 1],
@@ -65,11 +66,11 @@ else:
 #~ win.graph.regenerate_surface(lazy=False)
 #~ win.graph.queue_draw()
 
+dirName = logFileName + '/'
+mkpath("./" + dirName)
 
-
-running = True
 exportedFirst = False
-
+running = True
 		
 		
 # This function will be called repeatedly by the GTK+ main loop
@@ -80,6 +81,7 @@ def update_state_gui():
 	win.graph.regenerate_surface(lazy=False)
 	win.graph.queue_draw()
 	
+	#~ # save a screenshot of the GTK window
 	#~ width, height = win.get_size()
 	#~ pixbuf = Gdk.Pixbuf(Gdk.COLORSPACE_RGB, False, 8, width, height)
 #~ 
@@ -91,19 +93,31 @@ def update_state_gui():
 
 # This function will be called repeatedly by the GTK+ main loop
 def update_state_nogui():
-	global running
 	global exportedFirst
-
-	if not running: sys.exit(0)
+	global running
+	
 	
 	if not exportedFirst:
 		pixbuf = win.get_pixbuf()
 		pixbuf.savev(logFileName + '/frame00.png', 'png', [], [])
 		exportedFirst = True
-	else:
+		return True
+	
+	if not running:
 		pixbuf = win.get_pixbuf()
 		pixbuf.savev(logFileName + '/frameZZ.png', 'png', [], [])
-		running = False
+		sys.exit(0)
+
+	# run through all of the simulation
+	for i in range(runs):
+		simManager.stepSim()
+	simManager.exportData()
+	print("done running the simulation. exported data.")
+	running = False
+	
+	win.graph.regenerate_surface(lazy=False)
+	win.graph.queue_draw()
+
 	return True
 
 

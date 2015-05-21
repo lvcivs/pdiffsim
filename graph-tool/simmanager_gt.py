@@ -23,19 +23,18 @@ class SimManager:
 		self.running = 0
 		self.tick = 0
 		
+		# these values are set through the config file
 		self.speakers = 0
-		self.lambdaValue = 0.5 # how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
-		self.memorySize = 20 #10: very fast change, 100: very slow change
-		self.alphaBias = 1.0 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+		self.lambdaValue = 0 # how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
+		self.memorySize = 0 #10: very fast change, 100: very slow change
+		self.alphaBias = 0 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 		self.errorRate = 0
-		self.neighborRange = 1
-		self.utteranceLength = 10
+		self.utteranceLength = 0
 
 		self.logFileName = ""
 		
 		self.startTime = 0
-		
-		#~ self.visUpdateEvent = Event()
+
 
 	def setLogFileName(self, s):
 		self.logFileName = s
@@ -55,21 +54,6 @@ class SimManager:
 	def setMemorySize(self, i):
 		self.memorySize = i
 		#~ self.visUpdateEvent.fire()
-
-	def setNeighborRange(self, i):
-		self.neighborRange = i
-		#~ self.visUpdateEvent.fire()
-	
-	def setWeighting(self, s):
-		myClassName = ""
-		myDisabled = True
-		if (s == "none"):
-			self.alphaBias = 1
-			self.myClassName = "grayed"
-			self.myDisabled = True
-		elif (s == "weighted"):
-			myClassName = ""
-			myDisabled = False
 
 	def setErrorRate(self, i):
 		self.errorRate = i
@@ -108,19 +92,8 @@ class SimManager:
 		alpha = 1
 		return [red, green, blue, alpha]
 
-	#~ def runSim(self): # run or stop
-		#~ if not running:
-			#~ self.running = 1
-		#~ else:
-			#~ self.stopSim()
-#~ 
-	#~ def stopSim(self):
-		#~ #clearInterval(interval)
-		#~ self.running = 0
-
 	def stepSim(self):
 		print("step " + str(self.tick))
-		#~ print("step " + str(self.tick) + " .. ", end="")
 		vertices = list(self.myGraph.vertices())
 		shuffle(vertices)
 		for thisVertex in vertices:
@@ -140,8 +113,6 @@ class SimManager:
 		utteranceAgent = self.produceUtterance(agent)
 		utteranceNeighbor = self.produceUtterance(neighbor)
 		
-		#~ print("said: " + utteranceAgent + ", " + utteranceNeighbor)
-		
 		#store in memory
 		self.memory[agent] = self.truncateMemory(utteranceNeighbor + self.memory[agent])
 		self.memory[neighbor] = self.truncateMemory(utteranceAgent + self.memory[neighbor])
@@ -156,7 +127,6 @@ class SimManager:
 		self.grammar[neighbor] = neighborGrammarNew
 
 
-	
 	def produceUtterance(self, agent):
 		u = ""
 		for i in range(self.utteranceLength):
@@ -227,21 +197,7 @@ class SimManager:
 		for v in self.myGraph.vertices():
 			f.write(str(self.memory[v]) + "\n")
 		f.close()
-		#~ 
-		#~ # prepare image matrix, save to file
-		#~ imageMatrix = numpy.zeros((self.width*4, self.height*4, 3), dtype=numpy.uint8)
-		#~ for x in range(self.width):
-			#~ for y in range(self.height):
-				#~ p = self.grammarMatrix[x][y]
-				#~ green = math.floor(128 * p); # green according to CSS color definition
-				#~ red = math.floor(255 * (1 - p))
-				#~ thisColor = [red, green, 0]
-				#~ imgX = x * 4
-				#~ imgY = y * 4
-				#~ for i in range(4): imageMatrix[imgY+i][imgX:imgX+4] = thisColor
-		#~ img = scipymisc.toimage(imageMatrix)
-		#~ imgFileName = str(dirName + "final.png")
-		#~ scipymisc.imsave(imgFileName, img)
+
 
 
 
