@@ -31,6 +31,8 @@ class SimManager:
 		self.errorRate = 0
 		self.utteranceLength = 0
 
+		self.logValues = []
+		
 		self.logFileName = ""
 		
 		self.startTime = 0
@@ -96,6 +98,7 @@ class SimManager:
 		print("step " + str(self.tick))
 		vertices = list(self.myGraph.vertices())
 		shuffle(vertices)
+		sumGValues = 0
 		for thisVertex in vertices:
 			#pick a neighbor
 			neighbors = list(thisVertex.out_neighbours())
@@ -105,7 +108,14 @@ class SimManager:
 
 			# update colors
 			self.colors[thisVertex] = self.calculateColor(self.grammar[thisVertex])
+			sumGValues += self.grammar[thisVertex]
 
+		# save indexed values for later export (e.g. for plotting in R)
+		sumAgents = self.myGraph.num_vertices()
+		alpha_y = 100 / sumAgents * sumGValues
+		beta_y = 100 / sumAgents * (sumAgents - sumGValues)
+		self.logValues.append([self.tick, alpha_y, beta_y])
+		
 		self.tick += 1
 
 
@@ -170,20 +180,13 @@ class SimManager:
 		# note that this will depend on other work load on the machine, as well
 		f.close()
 		
-		# save indexed values for later export (e.g. for plotting in R)
-		sumGValues = 0
-		for v in self.myGraph.vertices():
-				sumGValues += self.grammar[v]
-
-		sumAgents = self.myGraph.num_vertices()
-		alpha_y = 100 / sumAgents * sumGValues
-		beta_y = 100 / sumAgents * (sumAgents - sumGValues)
-		
 		# export the sums of the g values, in a CSV format to be processed by e.g. R
-		datFileName = str(dirName + self.logFileName)[:-4] + '.dat'
+		datFileName = str(dirName + 'frequencies.dat')
 		f = open(datFileName, 'w')
 		f.write("Ticks,AlphaY,BetaY\n")
-		f.write(str(self.tick) + "," + str(alpha_y) + "," + str(beta_y) + "\n")
+		for i in range(len(self.logValues)):
+			a = self.logValues[i]
+			f.write(str(a[0]) + "," + str(a[1]) + "," + str(a[2]) + "\n")
 		f.close()
 		
 		#numpy.set_printoptions(threshold=numpy.inf)
