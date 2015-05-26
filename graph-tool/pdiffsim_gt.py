@@ -39,6 +39,7 @@ simManager.setMemorySize(config.getint('simulation', 'memorySize'))
 simManager.setAlphaBias(config.getfloat('simulation', 'alphaBias'))
 simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
 simManager.setUtteranceLength(config.getint('simulation', 'utteranceLength'))
+snapshotInterval = config.getint('simulation', 'snapshotInterval')
 gui = config.getboolean('simulation', 'gui')
 runs = config.getint('simulation', 'runs')
 
@@ -70,8 +71,7 @@ dirName = logFileName + '/'
 mkpath("./" + dirName)
 
 graphDirty = True
-		
-		
+
 # This function will be called repeatedly by the GTK+ main loop
 def update_state_gui():
 
@@ -102,21 +102,21 @@ def update_state_nogui():
 
 	return True
 
-def saveScreenshot(s, e):
+def saveSnapshot(s, e):
 	global graphDirty
-	if graphDirty:
+	if graphDirty and (simManager.tick % snapshotInterval == 0):
 		pixbuf = win.get_pixbuf()
 		pixbuf.savev(logFileName + '/frame' + str(simManager.tick).zfill(4) + '.png', 'png', [], [])
 		graphDirty = False
-		print("saving screenshot " + str(simManager.tick))
+		#~ print("saving snapshot " + str(simManager.tick))
 
 # Bind the function above as an 'idle' callback.
 if not gui:
-	cid = GObject.idle_add(update_state_nogui)
+	cid = GObject.timeout_add(100, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
 else:
 	cid = GObject.idle_add(update_state_gui)
 #~ win.connect_after("draw", saveScreenshot)
-win.connect_after("damage-event", saveScreenshot)
+win.connect_after("damage-event", saveSnapshot)
 
 # We will give the user the ability to stop the program by closing the window.
 win.connect("delete_event", Gtk.main_quit)

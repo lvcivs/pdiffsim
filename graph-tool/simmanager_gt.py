@@ -117,7 +117,7 @@ class SimManager:
 		self.logValues.append([self.tick, alpha_y, beta_y])
 		
 		self.tick += 1
-		print("stepped to " + str(self.tick))
+		#~ print("stepped to " + str(self.tick))
 
 
 	def communicate(self, agent, neighbor):
