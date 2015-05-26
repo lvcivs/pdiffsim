@@ -39,7 +39,7 @@ simManager.setMemorySize(config.getint('simulation', 'memorySize'))
 simManager.setAlphaBias(config.getfloat('simulation', 'alphaBias'))
 simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
 simManager.setUtteranceLength(config.getint('simulation', 'utteranceLength'))
-nogui = config.getboolean('simulation', 'nogui')
+gui = config.getboolean('simulation', 'gui')
 runs = config.getint('simulation', 'runs')
 
 
@@ -49,7 +49,7 @@ simManager.initSim(myGraph, pos)
 
 
 # This creates a GTK+ window with the initial graph layout
-if nogui:
+if not gui:
 	win = Gtk.OffscreenWindow()
 	win.set_default_size(500, 400)
 	win.graph = GraphWidget(simManager.myGraph, simManager.pos,
@@ -68,9 +68,6 @@ win.graph.queue_draw()
 
 dirName = logFileName + '/'
 mkpath("./" + dirName)
-
-#~ exportedFirst = False
-#~ running = True
 
 graphDirty = True
 		
@@ -114,7 +111,7 @@ def saveScreenshot(s, e):
 		print("saving screenshot " + str(simManager.tick))
 
 # Bind the function above as an 'idle' callback.
-if nogui:
+if not gui:
 	cid = GObject.idle_add(update_state_nogui)
 else:
 	cid = GObject.idle_add(update_state_gui)
