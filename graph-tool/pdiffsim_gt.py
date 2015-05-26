@@ -63,14 +63,16 @@ else:
 										edge_color=[0.6, 0.6, 0.6, 1],
 										vertex_fill_color=simManager.colors)
 
-#~ win.graph.regenerate_surface(lazy=False)
-#~ win.graph.queue_draw()
+win.graph.regenerate_surface(lazy=False)
+win.graph.queue_draw()
 
 dirName = logFileName + '/'
 mkpath("./" + dirName)
 
-exportedFirst = False
-running = True
+#~ exportedFirst = False
+#~ running = True
+
+graphDirty = True
 		
 		
 # This function will be called repeatedly by the GTK+ main loop
@@ -81,52 +83,43 @@ def update_state_gui():
 	win.graph.regenerate_surface(lazy=False)
 	win.graph.queue_draw()
 	
-	#~ # save a screenshot of the GTK window
-	#~ width, height = win.get_size()
-	#~ pixbuf = Gdk.Pixbuf(Gdk.COLORSPACE_RGB, False, 8, width, height)
-#~ 
-	#~ screenshot = pixbuf.get_from_drawable(win.window, win.get_colormap(), 
-																				#~ 0, 0, 0, 0, width, height)
-	#~ screenshot.save(logFileName + '/screenshot.png', 'png')
-	
+	#~ gtk.Widget.get_snapshot() 
+	 
 	return True
 
-# This function will be called repeatedly by the GTK+ main loop
+# works, but slow
 def update_state_nogui():
-	global exportedFirst
-	global running
+	global graphDirty
 	
-	
-	if not exportedFirst:
-		pixbuf = win.get_pixbuf()
-		pixbuf.savev(logFileName + '/frame00.png', 'png', [], [])
-		exportedFirst = True
-		return True
-	
-	if not running:
-		pixbuf = win.get_pixbuf()
-		pixbuf.savev(logFileName + '/frameZZ.png', 'png', [], [])
+	if simManager.tick >= runs - 1:
+		simManager.exportData()
+		print("done running the simulation. exported data.")
 		sys.exit(0)
 
 	# run through all of the simulation
-	for i in range(runs):
-		simManager.stepSim()
-	simManager.exportData()
-	print("done running the simulation. exported data.")
-	running = False
+	simManager.stepSim()
+	graphDirty = True
 	
 	win.graph.regenerate_surface(lazy=False)
 	win.graph.queue_draw()
 
 	return True
 
+def saveScreenshot(s, e):
+	global graphDirty
+	if graphDirty:
+		pixbuf = win.get_pixbuf()
+		pixbuf.savev(logFileName + '/frame' + str(simManager.tick).zfill(4) + '.png', 'png', [], [])
+		graphDirty = False
+		print("saving screenshot " + str(simManager.tick))
 
 # Bind the function above as an 'idle' callback.
 if nogui:
 	cid = GObject.idle_add(update_state_nogui)
 else:
 	cid = GObject.idle_add(update_state_gui)
-
+#~ win.connect_after("draw", saveScreenshot)
+win.connect_after("damage-event", saveScreenshot)
 
 # We will give the user the ability to stop the program by closing the window.
 win.connect("delete_event", Gtk.main_quit)

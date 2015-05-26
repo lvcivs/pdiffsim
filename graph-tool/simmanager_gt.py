@@ -86,6 +86,7 @@ class SimManager:
 		self.colors = self.myGraph.new_vertex_property("vector<double>")
 		for v in self.myGraph.vertices():
 			self.colors[v] = self.calculateColor(self.grammar[v])
+		print("simulation initiated.")
 
 	def calculateColor(self, grammarValue):
 		red = 1 - grammarValue
@@ -95,7 +96,6 @@ class SimManager:
 		return [red, green, blue, alpha]
 
 	def stepSim(self):
-		print("step " + str(self.tick))
 		vertices = list(self.myGraph.vertices())
 		shuffle(vertices)
 		sumGValues = 0
@@ -117,6 +117,7 @@ class SimManager:
 		self.logValues.append([self.tick, alpha_y, beta_y])
 		
 		self.tick += 1
+		print("stepped to " + str(self.tick))
 
 
 	def communicate(self, agent, neighbor):
