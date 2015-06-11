@@ -13,7 +13,8 @@ simulation2:
 	python3 pdiffsim_gt.py simulation2.cfg
 	Rscript frequencies.R simulation2.log
 
-
+clean:
+	rm -rf simulation1.log
 
 # NOTES
 # had to manually install pycallgraph module, using pip3 (wouldn't work with python3 otherwise)

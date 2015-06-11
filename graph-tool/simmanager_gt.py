@@ -30,6 +30,7 @@ class SimManager:
 		self.alphaBias = 0 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
 		self.errorRate = 0
 		self.utteranceLength = 0
+		self.discreteProduction = 0
 
 		self.logValues = []
 		
@@ -64,6 +65,8 @@ class SimManager:
 	def setUtteranceLength(self, i):
 		self.utteranceLength = i
 		#~ self.visUpdateEvent.fire()
+	def setDiscreteProduction(self, i):
+		self.discreteProduction = i
 
 	def initSim(self, myGraph, pos):
 		self.tick = 0
@@ -124,6 +127,9 @@ class SimManager:
 		utteranceAgent = self.produceUtterance(agent)
 		utteranceNeighbor = self.produceUtterance(neighbor)
 		
+		oldGrammar = self.grammar[agent]
+		oldMemory = self.memory[agent]
+
 		#store in memory
 		self.memory[agent] = self.truncateMemory(utteranceNeighbor + self.memory[agent])
 		self.memory[neighbor] = self.truncateMemory(utteranceAgent + self.memory[neighbor])
@@ -134,17 +140,24 @@ class SimManager:
 		agentGrammarNew = round(agentGrammarNew, 10)
 		neighborGrammarNew = round(neighborGrammarNew, 10)
 		
-		self.grammar[agent] = agentGrammarNew
-		self.grammar[neighbor] = neighborGrammarNew
+		if self.discreteProduction:
+			self.grammar[agent] = 0 if (agentGrammarNew <= 0.5) else 1
+			self.grammar[neighbor] = 0 if (neighborGrammarNew <= 0.5) else 1
+			#debug
+			#~ if not (oldGrammar == self.grammar[agent]): print("converted", agent, oldGrammar, agentGrammarNew, self.grammar[agent], oldMemory, self.memory[agent])
+		else:
+			self.grammar[agent] = agentGrammarNew
+			self.grammar[neighbor] = neighborGrammarNew
 
 
 	def produceUtterance(self, agent):
 		u = ""
 		for i in range(self.utteranceLength):
 			myRand = random()
-			if (myRand <= self.grammar[agent] * self.alphaBias): u += "α" # bias is implemented by multiplication
+			if (myRand <= (self.grammar[agent] + self.alphaBias)): u += "α" # bias is implemented by multiplication
 			else: u += "β"
 		return u
+			
 
 	def countARatio(self, memory):
 		if len(memory) == 0: return 0
