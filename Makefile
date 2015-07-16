@@ -7,14 +7,27 @@ plots:
 
 simulation1:
 	python3 pdiffsim_gt.py simulation1.cfg
-	Rscript frequencies.R simulation1.log
+	if test -e "simulation1.log/frequencies.dat"; then Rscript frequencies.R simulation1.log; fi;
 
 simulation2:
 	python3 pdiffsim_gt.py simulation2.cfg
-	Rscript frequencies.R simulation2.log
+	if test -e "simulation2.log/frequencies.dat"; then Rscript frequencies.R simulation2.log; fi;
+
+simulation3:
+	python3 pdiffsim_gt.py simulation3.cfg
+	if test -e "simulation3.log/frequencies.dat"; then Rscript frequencies.R simulation3.log; fi;
+
+simulation4:
+	python3 pdiffsim_gt.py simulation4.cfg
+	if test -e "simulation4.log/frequencies.dat"; then Rscript frequencies.R simulation4.log; fi;
+
+simulation5:
+	python3 pdiffsim_gt.py simulation5.cfg
+	if test -e "simulation5.log/frequencies.dat"; then Rscript frequencies.R simulation5.log; fi;
 
 clean:
 	rm -rf simulation1.log
+	
 
 # NOTES
 # had to manually install pycallgraph module, using pip3 (wouldn't work with python3 otherwise)
