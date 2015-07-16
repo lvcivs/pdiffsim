@@ -33,6 +33,7 @@ config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
 speakers = config.getint('simulation', 'speakers')
+network = config.get('simulation', 'network')
 simManager.setSpeakers(speakers)
 simManager.setLambdaValue(config.getfloat('simulation', 'lambdaValue'))
 simManager.setMemorySize(config.getint('simulation', 'memorySize'))
@@ -45,7 +46,12 @@ gui = config.getboolean('simulation', 'gui')
 runs = config.getint('simulation', 'runs')
 
 
-myGraph, pos = triangulation(random((speakers, 2)) * 4, type="delaunay") # will create a more or less rectangular layout
+if network == "random":
+	myGraph, pos = triangulation(random((speakers, 2)) * 4, type="delaunay") # will create a more or less rectangular layout
+else:
+	myGraph = collection.data[network] #~ "netscience", "dolphins", ...
+	pos = myGraph.vp["pos"]
+	
 simManager.initSim(myGraph, pos)
 
 
@@ -65,7 +71,7 @@ else:
 										edge_color=[0.6, 0.6, 0.6, 1],
 										vertex_fill_color=simManager.colors)
 
-win.graph.regenerate_surface(lazy=False)
+win.graph.regenerate_surface()
 win.graph.queue_draw()
 
 dirName = logFileName + '/'
@@ -78,7 +84,7 @@ def update_state_gui():
 
 	simManager.stepSim()
 
-	win.graph.regenerate_surface(lazy=False)
+	win.graph.regenerate_surface()
 	win.graph.queue_draw()
 	
 	#~ gtk.Widget.get_snapshot() 
@@ -98,7 +104,7 @@ def update_state_nogui():
 	simManager.stepSim()
 	graphDirty = True
 	
-	win.graph.regenerate_surface(lazy=False)
+	win.graph.regenerate_surface()
 	win.graph.queue_draw()
 
 	return True
@@ -113,7 +119,9 @@ def saveSnapshot(s, e):
 
 # Bind the function above as an 'idle' callback.
 if not gui:
-	cid = GObject.timeout_add(100, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
+	cid = GObject.timeout_add(500, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
+	# for a small network of 200, a small value of 200 should be enough
+	# for a large network of 2000 agents, this value should be 500 or more
 else:
 	cid = GObject.idle_add(update_state_gui)
 #~ win.connect_after("draw", saveScreenshot)
