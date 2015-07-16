@@ -112,6 +112,14 @@ class SimManager:
 			# update colors
 			self.colors[thisVertex] = self.calculateColor(self.grammar[thisVertex])
 			sumGValues += self.grammar[thisVertex]
+			
+			# random chance to let agent die of old age (reset to defaults)
+			#~ if (randint(0, 2000) == 0):
+				#~ print ("an agent died", thisVertex)
+				#~ self.grammar[thisVertex] = 0 # how should we initialize it?
+				#~ self.memory[thisVertex] = ""
+				#~ self.colors[thisVertex] = self.calculateColor(self.grammar[thisVertex])
+
 
 		# save indexed values for later export (e.g. for plotting in R)
 		sumAgents = self.myGraph.num_vertices()

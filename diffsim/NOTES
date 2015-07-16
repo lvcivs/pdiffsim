@@ -1,7 +1,0 @@
-	// round to 12 decimal points 
-	// WARNING this might not be precise for some values
-	agentGrammarNew = Math.round(agentGrammarNew * Math.pow(10, 10)) / Math.pow(10, 10);
-	neighborGrammarNew = Math.round(neighborGrammarNew * Math.pow(10, 10)) / Math.pow(10, 10);
-
-
-		if (myRand <= agentGrammar + (g_alphaBias-1)/100) u += "α"; // should check this, multiplication good approach?
