@@ -77,6 +77,7 @@ win.graph.queue_draw()
 dirName = logFileName + '/'
 mkpath("./" + dirName)
 
+# this will keep track if there have been any changes that require a redraw 
 graphDirty = True
 
 # This function will be called repeatedly by the GTK+ main loop
@@ -88,7 +89,6 @@ def update_state_gui():
 	win.graph.queue_draw()
 	
 	#~ gtk.Widget.get_snapshot() 
-	 
 	return True
 
 # works, but slow
@@ -100,7 +100,7 @@ def update_state_nogui():
 		print("done running the simulation. exported data.")
 		sys.exit(0)
 
-	# run through all of the simulation
+	# advance the simulation by one step
 	simManager.stepSim()
 	graphDirty = True
 	
@@ -115,21 +115,19 @@ def saveSnapshot(s, e):
 		pixbuf = win.get_pixbuf()
 		pixbuf.savev(logFileName + '/frame' + str(simManager.tick).zfill(4) + '.png', 'png', [], [])
 		graphDirty = False
-		#~ print("saving snapshot " + str(simManager.tick))
 
-# Bind the function above as an 'idle' callback.
+# set up the callback functions
 if not gui:
 	cid = GObject.timeout_add(500, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
 	# for a small network of 200, a small value of 200 should be enough
 	# for a large network of 2000 agents, this value should be 500 or more
 else:
 	cid = GObject.idle_add(update_state_gui)
-#~ win.connect_after("draw", saveScreenshot)
 win.connect_after("damage-event", saveSnapshot)
 
-# We will give the user the ability to stop the program by closing the window.
+# close the window on user request
 win.connect("delete_event", Gtk.main_quit)
 
-# Actually show the window, and start the main loop.
+# show the window, and start the main loop
 win.show_all()
 Gtk.main()

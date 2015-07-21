@@ -23,19 +23,23 @@ class SimManager:
 		self.running = 0
 		self.tick = 0
 		
-		# these values are set through the config file
+		# the following values are set through the config file
 		self.speakers = 0
-		self.lambdaValue = 0 # how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
-		self.memorySize = 0 #10: very fast change, 100: very slow change
-		self.alphaBias = 0 # fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+		
+		# how likely the agent is to change its behaviour; 0.2: slow change, 0.8: fast change, 0.5: default
+		self.lambdaValue = 0 
+		
+		#10: very fast change, 100: very slow change
+		self.memorySize = 0 
+		
+		# fitness of alpha, bias towards alpha (if given a choice between alpha and beta)
+		self.alphaBias = 0 
 		self.errorRate = 0
 		self.utteranceLength = 0
 		self.discreteProduction = 0
 
 		self.logValues = []
-		
 		self.logFileName = ""
-		
 		self.startTime = 0
 
 
@@ -48,23 +52,19 @@ class SimManager:
 	
 	def setLambdaValue(self, i):
 		self.lambdaValue = i
-		#~ self.visUpdateEvent.fire()
 	
 	def setAlphaBias(self, i):
 		self.alphaBias = i
-		#~ self.visUpdateEvent.fire()
 	
 	def setMemorySize(self, i):
 		self.memorySize = i
-		#~ self.visUpdateEvent.fire()
 
 	def setErrorRate(self, i):
 		self.errorRate = i
-		#~ self.visUpdateEvent.fire()
 		
 	def setUtteranceLength(self, i):
 		self.utteranceLength = i
-		#~ self.visUpdateEvent.fire()
+
 	def setDiscreteProduction(self, i):
 		self.discreteProduction = i
 
@@ -77,18 +77,19 @@ class SimManager:
 		self.grammar = self.myGraph.new_vertex_property("double")
 		self.memory = self.myGraph.new_vertex_property("string")
 		
-		# Initialize 
+		# initialize 
 		for v in self.myGraph.vertices():
 			self.grammar[v] = 0
 			self.memory[v] = ""
 	
-		#innovator
+		# define an innovator
 		self.grammar[self.myGraph.vertex(0)] = 1
 		
 		# color property
 		self.colors = self.myGraph.new_vertex_property("vector<double>")
 		for v in self.myGraph.vertices():
 			self.colors[v] = self.calculateColor(self.grammar[v])
+		
 		print("simulation initiated.")
 
 	def calculateColor(self, grammarValue):
@@ -128,8 +129,6 @@ class SimManager:
 		self.logValues.append([self.tick, alpha_y, beta_y])
 		
 		self.tick += 1
-		#~ print("stepped to " + str(self.tick))
-
 
 	def communicate(self, agent, neighbor):
 		utteranceAgent = self.produceUtterance(agent)
@@ -142,6 +141,7 @@ class SimManager:
 		self.memory[agent] = self.truncateMemory(utteranceNeighbor + self.memory[agent])
 		self.memory[neighbor] = self.truncateMemory(utteranceAgent + self.memory[neighbor])
 
+		# calculate new grammar values
 		agentGrammarNew = self.grammar[agent] + self.lambdaValue * (self.countARatio(self.memory[agent]) - self.grammar[agent])
 		neighborGrammarNew = self.grammar[neighbor] + self.lambdaValue * (self.countARatio(self.memory[neighbor]) - self.grammar[neighbor])
 
@@ -151,21 +151,17 @@ class SimManager:
 		if self.discreteProduction:
 			self.grammar[agent] = 0 if (agentGrammarNew <= 0.5) else 1
 			self.grammar[neighbor] = 0 if (neighborGrammarNew <= 0.5) else 1
-			#debug
-			#~ if not (oldGrammar == self.grammar[agent]): print("converted", agent, oldGrammar, agentGrammarNew, self.grammar[agent], oldMemory, self.memory[agent])
 		else:
 			self.grammar[agent] = agentGrammarNew
 			self.grammar[neighbor] = neighborGrammarNew
-
 
 	def produceUtterance(self, agent):
 		u = ""
 		for i in range(self.utteranceLength):
 			myRand = random()
-			if (myRand <= (self.grammar[agent] + self.alphaBias)): u += "α" # bias is implemented by multiplication
+			if (myRand <= (self.grammar[agent] + self.alphaBias)): u += "α" # apply bias
 			else: u += "β"
 		return u
-			
 
 	def countARatio(self, memory):
 		if len(memory) == 0: return 0
@@ -173,7 +169,6 @@ class SimManager:
 
 	def truncateMemory(self, memory):
 		return memory[:self.memorySize]
-
 
 	def applyError(self, s): # (potentially) introduce misunderstandings between speaker and hearer
 		if self.errorRate == 0: return s

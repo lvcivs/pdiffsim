@@ -1,4 +1,4 @@
-
+#~ This R-script automatizes the creation of a PNG plot from the simulation data (variant frequencies)
 args <- commandArgs(trailingOnly = TRUE)
 
 logFileName <- args[1]

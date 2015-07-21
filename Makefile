@@ -1,4 +1,4 @@
-# how to run
+# Make targets
 all:
 	python3 pdiffsim_gt.py simulation1.cfg
 
@@ -29,14 +29,11 @@ clean:
 	rm -rf simulation1.log
 	
 
-# video
-# convert -loop 0 frame*.png output.mp4
 
 # NOTES
-# had to manually install pycallgraph module, using pip3 (wouldn't work with python3 otherwise)
-# installs in $USER/.local !
-# later uninstalled, because didn't work
-#~ pip3 install pycallgraph
+
+# creating a video from frames
+# convert -loop 0 frame*.png output.mp4
 
 # simple timing of total execution speed
 #~ time python3 pgdiffsim.py offscreen
