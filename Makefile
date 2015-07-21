@@ -29,6 +29,9 @@ clean:
 	rm -rf simulation1.log
 	
 
+# video
+# convert -loop 0 frame*.png output.mp4
+
 # NOTES
 # had to manually install pycallgraph module, using pip3 (wouldn't work with python3 otherwise)
 # installs in $USER/.local !
