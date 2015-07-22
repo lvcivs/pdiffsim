@@ -24,7 +24,12 @@ simulation5:
 	if test -e "simulation5.log/frequencies.dat"; then Rscript frequencies.R simulation5.log; fi;
 
 clean:
-	rm -rf simulation1.log
+	# the minus makes Makefile ignore the return value (continue despite errors) 
+	-rm -r simulation1.log
+	-rm -r simulation2.log
+	-rm -r simulation3.log
+	-rm -r simulation4.log
+	-rm -r simulation5.log
 	
 
 
