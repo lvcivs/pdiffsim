@@ -17,7 +17,7 @@ from graph_tool.all import *
 # We need some Gtk and gobject functions
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
-from simmanager_gt import SimManager
+from simmanager import SimManager
 
 
 if len(sys.argv) == 1 : 
