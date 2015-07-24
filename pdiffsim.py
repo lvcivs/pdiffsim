@@ -41,6 +41,7 @@ simManager.setAlphaBias(config.getfloat('simulation', 'alphaBias'))
 simManager.setErrorRate(config.getfloat('simulation', 'errorRate'))
 simManager.setUtteranceLength(config.getint('simulation', 'utteranceLength'))
 simManager.setDiscreteProduction(config.getboolean('simulation', 'discreteProduction'))
+simManager.setWaveAmplitude(config.getfloat('simulation', 'waveAmplitude'))
 snapshotInterval = config.getint('simulation', 'snapshotInterval')
 gui = config.getboolean('simulation', 'gui')
 runs = config.getint('simulation', 'runs')
@@ -118,7 +119,7 @@ def saveSnapshot(s, e):
 
 # set up the callback functions
 if not gui:
-	cid = GObject.timeout_add(500, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
+	cid = GObject.timeout_add(800, update_state_nogui) # time in milliseconds [if we go too low there won't be enough time to update the offscreen window and save snapshots]
 	# for a small network of 200, a small value of 200 should be enough
 	# for a large network of 2000 agents, this value should be 500 or more
 else:

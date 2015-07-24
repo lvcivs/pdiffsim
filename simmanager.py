@@ -37,6 +37,7 @@ class SimManager:
 		self.errorRate = 0
 		self.utteranceLength = 0
 		self.discreteProduction = 0
+		self.waveAmplitude = 0
 
 		self.logValues = []
 		self.logFileName = ""
@@ -68,6 +69,9 @@ class SimManager:
 	def setDiscreteProduction(self, i):
 		self.discreteProduction = i
 
+	def setWaveAmplitude(self, i):
+		self.waveAmplitude = i
+
 	def initSim(self, myGraph, pos):
 		self.tick = 0
 		self.startTime = time.time()
@@ -76,14 +80,20 @@ class SimManager:
 
 		self.grammar = self.myGraph.new_vertex_property("double")
 		self.memory = self.myGraph.new_vertex_property("string")
+		self.amplitude = self.myGraph.new_vertex_property("double")
+		self.amplitudeMemory = self.myGraph.new_vertex_property("vector<double>")
 		
 		# initialize 
 		for v in self.myGraph.vertices():
 			self.grammar[v] = 0
 			self.memory[v] = ""
+			self.amplitude[v] = 0
+			self.amplitudeMemory[v] = []
 	
 		# define an innovator
 		self.grammar[self.myGraph.vertex(0)] = 1
+		if self.waveAmplitude > 0: 
+			self.amplitude[self.myGraph.vertex(0)] = self.waveAmplitude
 		
 		# color property
 		self.colors = self.myGraph.new_vertex_property("vector<double>")
@@ -134,6 +144,10 @@ class SimManager:
 		utteranceAgent = self.produceUtterance(agent)
 		utteranceNeighbor = self.produceUtterance(neighbor)
 		
+		if self.waveAmplitude > 0:
+			self.updateAmplitude("α", utteranceAgent, agent, neighbor)
+			self.updateAmplitude("α", utteranceNeighbor, neighbor, agent)
+		
 		oldGrammar = self.grammar[agent]
 		oldMemory = self.memory[agent]
 
@@ -159,7 +173,9 @@ class SimManager:
 		u = ""
 		for i in range(self.utteranceLength):
 			myRand = random()
-			if (myRand <= (self.grammar[agent] + self.alphaBias)): u += "α" # apply bias
+			bias = self.alphaBias
+			if self.waveAmplitude > 0: bias = self.amplitude[agent] # if we are operating in the wave scenario, use the wave amplitude instead of the global bias
+			if (myRand <= (self.grammar[agent] + bias)): u += "α" # apply own amplitude as bias
 			else: u += "β"
 		return u
 
@@ -169,6 +185,14 @@ class SimManager:
 
 	def truncateMemory(self, memory):
 		return memory[:self.memorySize]
+
+	def updateAmplitude(self, signal, utterance, agent, neighbor):
+		if signal in utterance:
+			amp = self.amplitude[agent] * 0.9 # when we pass it on, we reduce the amplitude by 10%
+			if amp > 0.01: #ignore very small amplitudes
+				self.amplitudeMemory[neighbor].append(amp) 
+				m = self.amplitudeMemory[neighbor]
+				self.amplitude[neighbor] = sum(m)/float(len(m))
 
 	def applyError(self, s): # (potentially) introduce misunderstandings between speaker and hearer
 		if self.errorRate == 0: return s
