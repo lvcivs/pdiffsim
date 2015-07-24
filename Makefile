@@ -23,6 +23,10 @@ simulation5:
 	python3 pdiffsim.py simulation5.cfg
 	if test -e "simulation5.log/frequencies.dat"; then Rscript frequencies.R simulation5.log; fi;
 
+simulation6:
+	python3 pdiffsim.py simulation6.cfg
+	if test -e "simulation6.log/frequencies.dat"; then Rscript frequencies.R simulation6.log; fi;
+
 clean:
 	# the minus makes Makefile ignore the return value (continue despite errors) 
 	-rm -r simulation1.log
@@ -30,6 +34,7 @@ clean:
 	-rm -r simulation3.log
 	-rm -r simulation4.log
 	-rm -r simulation5.log
+	-rm -r simulation6.log
 	
 
 

@@ -241,6 +241,11 @@ class SimManager:
 		for v in self.myGraph.vertices():
 			f.write(str(self.memory[v]) + "\n")
 		f.close()
+		amplitudeFileName = str(dirName + "amplitude.dat")
+		f = open(amplitudeFileName, 'w')
+		for v in self.myGraph.vertices():
+			f.write(str(self.amplitude[v]) + "\n")
+		f.close()
 
 
 
