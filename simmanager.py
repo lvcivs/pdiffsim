@@ -36,7 +36,7 @@ class SimManager:
 		self.alphaBias = 0 
 		self.errorRate = 0
 		self.utteranceLength = 0
-		self.discreteProduction = 0
+		self.discreteProduction = False
 		self.waveAmplitude = 0
 
 		self.logValues = []
