@@ -73,14 +73,14 @@ if not gui:
 	win.set_default_size(500, 400)
 	win.graph = GraphWidget(simManager.myGraph, simManager.pos,
 													edge_color=[0.6, 0.6, 0.6, 1],
-													vertex_fill_color=simManager.colors)
+													vertex_fill_color=simManager.colors.myPropertyMap)
 	win.add(win.graph)
 
 
 else:
 	win = GraphWindow(simManager.myGraph, simManager.pos, geometry=(500, 400),
 										edge_color=[0.6, 0.6, 0.6, 1],
-										vertex_fill_color=simManager.colors)
+										vertex_fill_color=simManager.colors.myPropertyMap)
 
 win.graph.regenerate_surface()
 win.graph.queue_draw()

@@ -11,8 +11,13 @@ lucius.antonius@gmail.com
 import math, time, scipy
 from numpy.random import *
 from distutils.dir_util import mkpath
-from graph_tool.all import *
-
+#~ from graph_tool.all import *
+		
+try:
+	from graph_tool.all import *
+except ImportError:
+	pass
+			
 # a wrapper for a simple two-dimensional matrix with some convenience functions
 class AgentMatrix:
 	def __init__(self, width, height, initValue):
@@ -169,6 +174,7 @@ class SimManager:
 		print("simulation initiated.")
 
 	def initSimFromGraph(self, graph, pos):
+		
 		self.tick = 0
 		self.startTime = time.time()
 		self.graphMode = True
